@@ -1,0 +1,295 @@
+# 코딩 표준 및 Best Practices
+
+## 기술 스택
+
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript 5.x
+- **Styling**: Tailwind CSS 4.x
+- **UI Components**: shadcn/ui, Radix UI
+- **Icons**: Lucide React
+- **Backend**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth + Google OAuth
+- **AI**: OpenAI API
+- **State Management**: React Server Components 우선, 필요시 Context API
+
+## 코드 스타일 및 구조
+
+### TypeScript 사용
+- 모든 코드는 TypeScript로 작성
+- `any` 타입 사용 금지
+- 인터페이스 우선, 타입은 유니온/교차 타입에만 사용
+- Enum 대신 const 객체와 as const 사용
+
+```typescript
+// ❌ 나쁜 예
+enum Dormitory {
+  DONGJAK = "dongjak",
+  EUNPYEONG = "eunpyeong",
+}
+
+// ✅ 좋은 예
+const DORMITORY = {
+  DONGJAK: "dongjak",
+  EUNPYEONG: "eunpyeong",
+} as const;
+
+type Dormitory = typeof DORMITORY[keyof typeof DORMITORY];
+```
+
+### 함수형 프로그래밍
+- 클래스 사용 금지
+- 함수형 컴포넌트만 사용
+- 순수 함수 선호
+- 부수 효과는 명확히 분리
+
+### 네이밍 컨벤션
+
+**파일 및 디렉토리**:
+- 컴포넌트 파일: PascalCase (예: `CandidateCard.tsx`)
+- 유틸리티 파일: kebab-case (예: `format-date.ts`)
+- 디렉토리: kebab-case (예: `components/auth-wizard/`)
+
+**변수 및 함수**:
+- 변수: camelCase (예: `isLoading`, `userProfile`)
+- 함수: camelCase (예: `getProfile`, `handleSubmit`)
+- 상수: UPPER_SNAKE_CASE (예: `DAILY_REVEAL_LIMIT`)
+- 컴포넌트: PascalCase (예: `GoogleLoginButton`)
+
+**타입 및 인터페이스**:
+- 인터페이스: PascalCase (예: `UserProfile`, `MatchingPost`)
+- 타입: PascalCase (예: `ApiResponse<T>`)
+
+### 파일 구조
+
+**컴포넌트 파일 구조**:
+```typescript
+// 1. Imports
+import { ... } from "...";
+
+// 2. Types/Interfaces
+interface ComponentProps {
+  // ...
+}
+
+// 3. Component
+export function Component({ prop }: ComponentProps) {
+  // ...
+}
+
+// 4. Subcomponents (필요시)
+function SubComponent() {
+  // ...
+}
+
+// 5. Helpers (필요시)
+function helperFunction() {
+  // ...
+}
+```
+
+## React 및 Next.js Best Practices
+
+### Server Components 우선
+- 기본적으로 모든 컴포넌트는 Server Component
+- 클라이언트 상호작용이 필요한 경우에만 `"use client"` 사용
+- `"use client"`는 최소한의 작은 컴포넌트에만 적용
+
+```typescript
+// ✅ 좋은 예: Server Component
+export function ProfileList() {
+  const profiles = await getProfiles(); // 서버에서 데이터 페칭
+  return <div>{/* ... */}</div>;
+}
+
+// ✅ 좋은 예: 작은 Client Component
+"use client";
+export function LikeButton() {
+  const [liked, setLiked] = useState(false);
+  return <button onClick={() => setLiked(!liked)}>...</button>;
+}
+```
+
+### 데이터 페칭
+- 서버 컴포넌트에서 직접 데이터 페칭
+- `fetch`는 Next.js의 자동 캐싱 활용
+- 에러는 `error.tsx`로 처리
+- 로딩은 `loading.tsx`로 처리
+
+```typescript
+// ✅ 좋은 예
+export default async function FeedPage() {
+  const profiles = await getMatchingPosts();
+  return <FeedList profiles={profiles} />;
+}
+```
+
+### 동적 라우팅
+- 동적 세그먼트: `[id]`, `[slug]` 등
+- 타입 안정성: `params`는 `Promise`로 래핑됨 (Next.js 15)
+
+```typescript
+export default async function ProfileDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  // ...
+}
+```
+
+### Suspense 및 로딩 상태
+- 데이터 페칭 컴포넌트는 Suspense로 감싸기
+- Fallback은 스켈레톤 UI 또는 로딩 인디케이터
+
+```typescript
+<Suspense fallback={<FeedSkeleton />}>
+  <FeedList />
+</Suspense>
+```
+
+## Supabase 사용 규칙
+
+### 클라이언트 생성
+- 클라이언트 사이드: `lib/supabase/client.ts`
+- 서버 사이드: `lib/supabase/server.ts`
+- 미들웨어: `lib/supabase/middleware.ts`
+
+### 쿼리 함수
+- 모든 DB 쿼리는 `lib/supabase/queries/`에 분리
+- 도메인별 파일 분리 (`profiles.ts`, `matching-posts.ts`)
+- 에러 핸들링 포함
+- 타입 안정성 보장
+
+```typescript
+// lib/supabase/queries/profiles.ts
+export async function getProfile(userId: string) {
+  const supabase = createServerClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
+  
+  if (error) throw error;
+  return data;
+}
+```
+
+### RLS 정책 준수
+- 모든 쿼리는 RLS 정책을 고려하여 작성
+- 소속관 기반 필터링은 필수
+- 서버 사이드에서만 데이터 수정
+
+## 스타일링 규칙
+
+### Tailwind CSS
+- 유틸리티 클래스 우선 사용
+- 커스텀 스타일은 `globals.css`에 최소화
+- 반응형은 모바일 우선 (`sm:`, `lg:`)
+- 다크 모드는 Phase 2에서 고려
+
+### className 관리
+- `lib/utils/cn.ts`의 `cn()` 함수 사용
+- 조건부 클래스는 `clsx`와 `tailwind-merge` 활용
+
+```typescript
+import { cn } from "@/lib/utils/cn";
+
+<div className={cn(
+  "base-classes",
+  isActive && "active-classes",
+  className // props로 받은 className
+)} />
+```
+
+## 에러 핸들링
+
+### 에러 바운더리
+- `app/error.tsx`: 라우트 레벨 에러 처리
+- `app/global-error.tsx`: 전역 에러 처리 (선택사항)
+
+### API 에러
+- API Route에서 명확한 에러 응답
+- 클라이언트에서 에러 상태 처리
+
+```typescript
+// API Route
+export async function POST(request: Request) {
+  try {
+    // ...
+    return Response.json({ data }, { status: 200 });
+  } catch (error) {
+    return Response.json(
+      { error: "에러 메시지" },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## 성능 최적화
+
+### 이미지 최적화
+- Next.js `Image` 컴포넌트 사용
+- WebP 형식 우선
+- Lazy loading 적용
+- 크기 지정 필수
+
+```typescript
+<Image
+  src={avatarUrl}
+  alt={name}
+  width={100}
+  height={100}
+  loading="lazy"
+/>
+```
+
+### 번들 크기 최적화
+- 동적 임포트: `next/dynamic` 활용
+- Tree-shaking: Named export 사용
+- 불필요한 의존성 제거
+
+### Web Vitals 최적화
+- LCP (Largest Contentful Paint): 이미지 최적화, 폰트 최적화
+- CLS (Cumulative Layout Shift): 레이아웃 안정성
+- FID (First Input Delay): JavaScript 최소화
+
+## 보안 규칙
+
+### 환경 변수
+- 민감한 정보는 `.env.local`에 저장
+- 클라이언트 접근: `NEXT_PUBLIC_` 접두사
+- 서버 전용: 접두사 없음
+
+### 인증 검증
+- 서버 사이드에서 항상 인증 상태 확인
+- RLS 정책으로 데이터 접근 제어
+- API Route에서 권한 검증
+
+### 개인정보 보호
+- 연락처는 조회권 시스템으로 보호 (Phase 2)
+- 마스킹 처리: `010-****-1234` 형식
+- 로그 기록: 모든 조회 기록 저장
+
+## 코드 리뷰 체크리스트
+
+- [ ] TypeScript 타입 오류 없음
+- [ ] Server Component 우선 사용
+- [ ] 에러 핸들링 포함
+- [ ] 로딩 상태 처리
+- [ ] 접근성 고려 (ARIA, 키보드 네비게이션)
+- [ ] 반응형 디자인 적용
+- [ ] RLS 정책 준수
+- [ ] 환경 변수 올바르게 사용
+- [ ] 불필요한 `"use client"` 없음
+- [ ] 코드 중복 최소화
+
+## 참고 자료
+
+- [Next.js 15 Documentation](https://nextjs.org/docs)
+- [Supabase Documentation](https://supabase.com/docs)
+- [shadcn/ui Components](https://ui.shadcn.com/)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)

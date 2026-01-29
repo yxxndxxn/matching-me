@@ -1,0 +1,180 @@
+# UI/UX 스타일 가이드
+
+## 디자인 컨셉
+
+**컨셉**: Clean & Trust (신뢰)
+- 깔끔하고 신뢰감 있는 디자인
+- Blue & White 톤의 게시판/커뮤니티 형태
+
+## 레이아웃 원칙
+
+### 전체 레이아웃
+- **스타일**: 틴더 같은 스와이프 방식이 아닌, 에어비앤비나 당근마켓 스타일의 수직 스크롤 피드
+- **구조**: 상단 필터바 + 탭 메뉴 + 카드 리스트
+- **반응형**: 모바일 우선 설계 (Mobile-first)
+
+### 페이지별 레이아웃
+
+**로그인 페이지**:
+- 중앙 정렬
+- Google 로그인 버튼 크게 배치
+- 최소한의 UI 요소
+
+**온보딩 페이지**:
+- 단계 표시기 (Step 1/2/3)
+- 폼은 중앙 정렬 또는 전체 너비
+- 이전/다음 버튼 또는 자동 진행
+
+**메인 피드**:
+- 상단: 필터바 (고정 또는 스크롤 시 숨김)
+- 중간: 탭 메뉴 (전체 매칭 / AI 추천)
+- 하단: 카드 리스트 (수직 스크롤)
+
+**프로필 상세**:
+- 상단: 프로필 이미지 및 기본 정보
+- 중간: 라이프 패턴 상세 정보
+- 하단: 연락처 확인 버튼
+
+## 카드 디자인
+
+### 매칭 카드 (`CandidateCard`)
+**구성 요소**:
+1. 프로필 이미지 (왼쪽 또는 상단)
+2. 이름, 성별, 계열, 학년
+3. 핵심 태그 (#비흡연 #아침형 등)
+4. AI 매칭 포인트 요약 (텍스트로 깔끔하게 배치)
+5. 찜하기 버튼 (Phase 2)
+
+**스타일**:
+- 흰색 배경, 그림자 효과
+- 둥근 모서리 (rounded-lg 또는 rounded-xl)
+- 호버 시 약간의 상승 효과 (transform, shadow 증가)
+- 간격: 카드 간 여백 충분히 확보
+
+### 프로필 카드 (`ProfileCard`)
+- 마이페이지용 프로필 표시
+- 편집 가능한 필드 표시
+- 아바타 이미지 + 기본 정보
+
+## 색상 시스템
+
+### 주요 색상
+- **Primary**: Blue 계열 (#0066cc 또는 Tailwind `blue-600`)
+- **Background**: White (#FFFFFF)
+- **Text**: Dark Gray (#1f2937 또는 Tailwind `gray-800`)
+- **Border**: Light Gray (#e5e7eb 또는 Tailwind `gray-200`)
+
+### 상태 색상
+- **Success**: Green (#10b981 또는 Tailwind `green-500`)
+- **Error**: Red (#ef4444 또는 Tailwind `red-500`)
+- **Warning**: Yellow (#f59e0b 또는 Tailwind `yellow-500`)
+- **Info**: Blue (#3b82f6 또는 Tailwind `blue-500`)
+
+### Tailwind CSS 사용
+- Tailwind CSS 유틸리티 클래스 활용
+- 커스텀 색상은 `tailwind.config.ts`에서 정의
+- 다크 모드는 Phase 2에서 고려
+
+## 타이포그래피
+
+### 폰트
+- 기본: 시스템 폰트 스택 또는 Geist Sans
+- 제목: Bold 또는 Semibold
+- 본문: Regular 또는 Medium
+- 작은 텍스트: Regular
+
+### 크기
+- H1: `text-3xl` 또는 `text-4xl` (페이지 제목)
+- H2: `text-2xl` (섹션 제목)
+- H3: `text-xl` (카드 제목)
+- Body: `text-base` (기본 텍스트)
+- Small: `text-sm` (보조 텍스트)
+- Caption: `text-xs` (태그, 라벨)
+
+## 컴포넌트 스타일 가이드
+
+### 버튼
+- **Primary**: Blue 배경, 흰색 텍스트
+- **Secondary**: 흰색 배경, Blue 텍스트, Border
+- **Ghost**: 투명 배경, 텍스트만
+- 크기: `h-10`, `h-12` (기본), `h-14` (큰 버튼)
+- 둥근 모서리: `rounded-lg` 또는 `rounded-full`
+
+### 입력 필드
+- Border: `border-gray-300`
+- Focus: `focus:ring-2 focus:ring-blue-500`
+- 에러 상태: `border-red-500`
+- 높이: `h-10` 또는 `h-12`
+
+### 카드
+- 배경: `bg-white`
+- 그림자: `shadow-sm` 또는 `shadow-md`
+- 둥근 모서리: `rounded-lg` 또는 `rounded-xl`
+- 패딩: `p-4` 또는 `p-6`
+
+### 배지/태그
+- 배경: `bg-blue-100` 또는 `bg-gray-100`
+- 텍스트: `text-blue-700` 또는 `text-gray-700`
+- 크기: `text-xs` 또는 `text-sm`
+- 둥근 모서리: `rounded-full`
+
+## 애니메이션 (Phase 2)
+
+### 로딩 상태
+- 스켈레톤 UI 적용
+- 펄스 애니메이션 (`animate-pulse`)
+- 카드 리스트 로딩 시 각 카드에 스켈레톤 적용
+
+### 전환 효과
+- 페이지 전환: Fade 또는 Slide
+- 카드 호버: `transition-all duration-200`
+- 버튼 클릭: 약간의 스케일 효과
+
+## 접근성 (A11y)
+
+### 키보드 네비게이션
+- 모든 인터랙티브 요소는 키보드로 접근 가능
+- Focus 상태 명확히 표시 (`focus:ring-2`)
+
+### ARIA 레이블
+- 아이콘 버튼에 `aria-label` 추가
+- 폼 필드에 `aria-describedby` 연결 (에러 메시지)
+
+### 색상 대비
+- WCAG AA 기준 준수 (4.5:1 이상)
+
+## 반응형 디자인
+
+### 브레이크포인트
+- Mobile: 기본 (< 640px)
+- Tablet: `sm:` (≥ 640px)
+- Desktop: `lg:` (≥ 1024px)
+
+### 모바일 우선 설계
+- 기본 스타일은 모바일 기준
+- 큰 화면에서 그리드 레이아웃 적용
+- 카드: 모바일 1열, 태블릿 2열, 데스크톱 3열
+
+## shadcn/ui 컴포넌트 활용
+
+### 사용 컴포넌트
+- `Button`: 모든 버튼에 사용
+- `Card`: 매칭 카드, 프로필 카드
+- `Input`: 폼 입력 필드
+- `Select`: 드롭다운 선택
+- `Tabs`: 탭 메뉴
+- `Skeleton`: 로딩 상태
+- `Badge`: 태그 표시
+
+### 커스터마이징
+- shadcn/ui 컴포넌트는 프로젝트 디자인에 맞게 커스터마이징
+- `components/ui/` 디렉토리에 복사 후 수정
+- Tailwind CSS로 스타일 오버라이드
+
+## 구현 규칙
+
+1. **일관성**: 모든 페이지에서 동일한 디자인 시스템 적용
+2. **재사용성**: 공통 컴포넌트는 `components/ui/`에 배치
+3. **반응형 필수**: 모든 컴포넌트는 모바일부터 데스크톱까지 대응
+4. **로딩 상태**: 데이터 페칭 중에는 항상 로딩 UI 표시
+5. **에러 상태**: 에러 발생 시 사용자 친화적 메시지 표시
