@@ -1,9 +1,9 @@
-// 대시보드 레이아웃 (탭 네비게이션 포함)
+import { AppShell } from "@/components/common/AppShell"
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  return <>{children}</>;
+  return <AppShell dailyRevealsRemaining={3}>{children}</AppShell>
 }

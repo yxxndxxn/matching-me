@@ -1,5 +1,5 @@
-// 마이페이지
+import { ProfileView } from "@/components/profile-view"
 
 export default function ProfilePage() {
-  return null;
+  return <ProfileView />
 }

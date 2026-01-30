@@ -1,5 +1,11 @@
-// 테마 관리 Context Provider (필요시)
+"use client"
 
-export function ThemeProvider() {
-  return null;
+import * as React from "react"
+import {
+  ThemeProvider as NextThemesProvider,
+  type ThemeProviderProps,
+} from "next-themes"
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
 }

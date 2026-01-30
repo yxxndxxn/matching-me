@@ -1,5 +1,5 @@
-// 전체 매칭 피드
+import { FeedList } from "@/components/domain/feed/feed-list"
 
 export default function FeedPage() {
-  return null;
+  return <FeedList />
 }
