@@ -7,6 +7,7 @@ import { Search, User, Info } from "lucide-react"
 import { cn } from "@/lib/utils/cn"
 import { useAuth } from "@/hooks/use-auth"
 import { useDailyLimitContext } from "@/components/providers/daily-limit-provider"
+import { useDashboardNav } from "@/components/providers/dashboard-nav-provider"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export interface SidebarProps {
@@ -18,6 +19,7 @@ export function Sidebar({ dailyRevealsRemaining: _propRemaining }: SidebarProps)
   const pathname = usePathname()
   const { user } = useAuth()
   const { remaining: dailyRevealsRemaining } = useDailyLimitContext()
+  const { clearFeedSelection } = useDashboardNav()
   const isHome = pathname === "/dashboard" || pathname === "/" || pathname.startsWith("/dashboard/")
   const isProfile = pathname.startsWith("/profile")
   const sidebarAvatarUrl =
@@ -29,6 +31,7 @@ export function Sidebar({ dailyRevealsRemaining: _propRemaining }: SidebarProps)
       <Link
         href="/dashboard"
         className="w-full p-6 border-b border-border text-left hover:bg-muted/30 transition-colors"
+        onClick={clearFeedSelection}
       >
         <h1 className="text-xl font-bold text-primary">매칭미?</h1>
         <p className="text-xs text-muted-foreground mt-1">

@@ -132,7 +132,7 @@ export function ProfileDetailView({
   const handleLoadContactClick = () => setContactRevealed(true)
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background pb-[280px]">
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
         <div className="w-full px-6">
           <div className="max-w-2xl mx-auto lg:max-w-4xl">

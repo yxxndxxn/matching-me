@@ -12,6 +12,7 @@ import { ProfileDetailView } from "@/components/domain/profile/profile-detail-vi
 import { useMatchingFeed } from "@/hooks/use-matching-feed"
 import { useBookmarks } from "@/hooks/use-bookmarks"
 import { useDailyLimitContext } from "@/components/providers/daily-limit-provider"
+import { useDashboardNav } from "@/components/providers/dashboard-nav-provider"
 import { useContactReveal, type RevealedContact } from "@/hooks/use-contact-reveal"
 import { useRevealedIds } from "@/hooks/use-revealed-ids"
 import type { UserProfile } from "@/lib/types"
@@ -52,7 +53,13 @@ export function FeedList() {
   const { remaining: dailyRevealsRemaining } = useDailyLimitContext()
   const { reveal: revealContact } = useContactReveal()
   const { revealedIds, addRevealedId } = useRevealedIds()
+  const { registerClearFeedSelection } = useDashboardNav()
   const [revealedContacts, setRevealedContacts] = useState<Record<string, RevealedContact>>({})
+
+  useEffect(() => {
+    const unregister = registerClearFeedSelection(() => setSelectedCandidate(null))
+    return unregister
+  }, [registerClearFeedSelection])
 
   useEffect(() => {
     if (error) {
