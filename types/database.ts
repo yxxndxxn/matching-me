@@ -20,27 +20,27 @@ export type Grade = "1학년" | "2학년" | "3학년" | "4학년";
 export interface Database {
   public: {
     Tables: {
-      profiles: {
+      mm_profiles: {
         Row: ProfileRow;
         Insert: ProfileInsert;
         Update: ProfileUpdate;
       };
-      matching_posts: {
+      mm_matching_posts: {
         Row: MatchingPostRow;
         Insert: MatchingPostInsert;
         Update: MatchingPostUpdate;
       };
-      view_logs: {
+      mm_view_logs: {
         Row: ViewLogRow;
         Insert: ViewLogInsert;
         Update: ViewLogUpdate;
       };
-      bookmarks: {
+      mm_bookmarks: {
         Row: BookmarkRow;
         Insert: BookmarkInsert;
         Update: BookmarkUpdate;
       };
-      daily_limits: {
+      mm_daily_limits: {
         Row: DailyLimitRow;
         Insert: DailyLimitInsert;
         Update: DailyLimitUpdate;
