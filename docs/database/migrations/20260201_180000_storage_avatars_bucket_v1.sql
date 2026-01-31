@@ -1,0 +1,18 @@
+-- ============================================================
+-- Supabase Storage: avatars 버킷 생성 (프로필 사진 업로드용)
+-- ============================================================
+-- Storage 버킷은 Supabase 대시보드에서 생성해야 합니다.
+--
+-- [설정 절차]
+-- 1. Supabase Dashboard → Storage → New bucket
+-- 2. Name: avatars
+-- 3. Public bucket: ✅ (프로필 이미지 공개 URL 필요)
+-- 4. Create bucket 클릭
+--
+-- [RLS 정책]
+-- 버킷 생성 후 Policies 탭에서:
+-- - Allow public read: 공개 버킷이면 이미 허용됨
+-- - Insert: "Users can upload to their own folder"
+--   Policy: (bucket_id = 'avatars') AND (auth.uid()::text = (storage.foldername(name))[1])
+-- - Update: 동일 정책 (본인 폴더만)
+-- ============================================================

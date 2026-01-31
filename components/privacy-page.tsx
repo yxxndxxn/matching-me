@@ -31,7 +31,7 @@ export function PrivacyPage({ onBack }: PrivacyPageProps) {
             <Shield className="size-8 text-primary shrink-0" />
             <div>
               <h2 className="text-sm font-semibold text-foreground">개인정보 수집·이용 안내</h2>
-              <p className="text-xs text-muted-foreground mt-0.5">매칭미? 서비스 이용 시 수집되는 정보입니다.</p>
+              <p className="text-xs text-muted-foreground mt-0.5">매칭미?(Matching me?) 서비스 이용 시 수집되는 정보입니다.</p>
             </div>
           </div>
 

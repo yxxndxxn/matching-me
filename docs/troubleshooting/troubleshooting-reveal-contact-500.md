@@ -10,9 +10,7 @@
 
 **해결**: 아래 마이그레이션을 Supabase SQL Editor에서 실행하세요.
 
-```
-docs/migrations/20260201_170000_view_logs_rls_insert_v1.sql
-```
+`docs/database/migrations/20260201_170000_view_logs_rls_insert_v1.sql`
 
 1. Supabase 대시보드 → SQL Editor
 2. `20260201_170000_view_logs_rls_insert_v1.sql` 파일 내용을 복사하여 붙여넣기

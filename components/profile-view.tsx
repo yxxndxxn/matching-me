@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -35,7 +35,7 @@ import { useBookmarks } from "@/hooks/use-bookmarks"
 import { useDailyLimit } from "@/hooks/use-daily-limit"
 import { useContactReveal, type RevealedContact } from "@/hooks/use-contact-reveal"
 import { useRevealedIds } from "@/hooks/use-revealed-ids"
-import { Skeleton } from "@/components/ui/skeleton"
+import { LoadingState } from "@/components/loading-state"
 import { Button } from "@/components/ui/button"
 import { ProfileEditForm } from "@/components/profile-edit-form"
 import { SettingsPage } from "@/components/settings-page"
@@ -165,6 +165,13 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
   const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false)
   const [withdrawing, setWithdrawing] = useState(false)
 
+  // 설정, 개인정보 보호 등 서브 페이지 진입 시 스크롤 맨 위로
+  useEffect(() => {
+    if (currentPage !== "main") {
+      window.scrollTo(0, 0)
+    }
+  }, [currentPage])
+
   const profile = profileData ?? null
   const googleAvatarUrl =
     (user?.user_metadata?.avatar_url as string | undefined) ??
@@ -230,12 +237,8 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
 
   if (profileLoading && !profile) {
     return (
-      <div className="min-h-screen pb-24 bg-background px-6 pt-12">
-        <div className="max-w-2xl mx-auto lg:max-w-4xl space-y-4">
-          <Skeleton className="h-24 w-24 rounded-full mx-auto bg-muted" />
-          <Skeleton className="h-6 w-32 mx-auto bg-muted" />
-          <Skeleton className="h-4 w-48 mx-auto bg-muted" />
-        </div>
+      <div className="min-h-screen pb-24 bg-background">
+        <LoadingState message="프로필을 불러오는 중이에요" />
       </div>
     )
   }
@@ -262,12 +265,8 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
 
   if (!profileLoading && !profile) {
     return (
-      <div className="min-h-screen pb-24 bg-background px-6 pt-12">
-        <div className="max-w-2xl mx-auto lg:max-w-4xl space-y-4">
-          <Skeleton className="h-24 w-24 rounded-full mx-auto bg-muted" />
-          <Skeleton className="h-6 w-32 mx-auto bg-muted" />
-          <Skeleton className="h-4 w-48 mx-auto bg-muted" />
-        </div>
+      <div className="min-h-screen pb-24 bg-background">
+        <LoadingState message="확인 중이에요" />
       </div>
     )
   }

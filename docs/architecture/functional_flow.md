@@ -130,10 +130,10 @@
 
 ## 참고
 
-- **DB 테이블**: `profiles`, `matching_posts`, `view_logs`, `bookmarks`, `daily_limits` (docs/supabase-schema.sql, db-schema.md)
+- **DB 테이블**: `profiles`, `matching_posts`, `view_logs`, `bookmarks`, `daily_limits` ([database/supabase-schema.sql](../database/supabase-schema.sql), [db-schema.md](../database/db-schema.md))
 - **인증**: Supabase Auth + Google OAuth. 세션은 쿠키, Server/Middleware/Browser 클라이언트로 일관 갱신.
 - **RLS**: profiles 본인만, matching_posts 동일 dormitory+is_active, bookmarks/view_logs/daily_limits 본인만.
-- **로드맵**: `docs/roadmap.md` (Supabase SDK + Google OAuth 단계별 계획)
+- **로드맵**: [roadmap.md](../product/roadmap.md)
 
 ---
 

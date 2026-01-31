@@ -1,6 +1,6 @@
 /**
  * Supabase 데이터베이스 타입 정의
- * docs/supabase-schema.sql 및 docs/db-schema.md와 동기화
+ * docs/database/supabase-schema.sql 및 docs/database/db-schema.md와 동기화
  */
 
 export type GenderType = "male" | "female";

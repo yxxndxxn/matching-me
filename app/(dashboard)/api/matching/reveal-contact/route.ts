@@ -55,14 +55,14 @@ export async function POST(request: Request) {
       );
       if (logError) {
         const message = isRlsError(logError)
-          ? "데이터베이스 권한 설정이 필요합니다. docs/migrations/20260201_170000_view_logs_rls_insert_v1.sql 마이그레이션을 Supabase에 적용해 주세요."
+          ? "데이터베이스 권한 설정이 필요합니다. docs/database/migrations/20260201_170000_view_logs_rls_insert_v1.sql 마이그레이션을 Supabase에 적용해 주세요."
           : logError.message;
         return NextResponse.json({ error: message }, { status: 500 });
       }
       const { error: limitError } = await incrementRevealsUsed(supabase, user.id);
       if (limitError) {
         const message = isRlsError(limitError)
-          ? "데이터베이스 권한 설정이 필요합니다. docs/migrations/20260201_170000_view_logs_rls_insert_v1.sql 마이그레이션을 Supabase에 적용해 주세요."
+          ? "데이터베이스 권한 설정이 필요합니다. docs/database/migrations/20260201_170000_view_logs_rls_insert_v1.sql 마이그레이션을 Supabase에 적용해 주세요."
           : limitError.message;
         return NextResponse.json({ error: message }, { status: 500 });
       }

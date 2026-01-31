@@ -69,8 +69,8 @@
 
 ## 5. DB 마이그레이션
 
-- **profiles**: `phone` → `other_contact` 적용 시 `docs/migrations/20260201_120000_profiles_phone_to_other_contact_v1.sql` 실행.
-- 신규 설치 시 `docs/supabase-schema.sql` 기준으로 `other_contact` 컬럼 사용.
+- **profiles**: `phone` → `other_contact` 적용 시 [database/migrations/20260201_120000_profiles_phone_to_other_contact_v1.sql](../database/migrations/20260201_120000_profiles_phone_to_other_contact_v1.sql) 실행.
+- 신규 설치 시 `docs/database/supabase-schema.sql` 기준으로 `other_contact` 컬럼 사용.
 
 ---
 
@@ -78,15 +78,15 @@
 
 1. **미로그인**  
    - [ ] `/` → `/login` 리다이렉트  
-   - [ ] `/feed`, `/profile` → `/login?redirectTo=...` 리다이렉트  
+   - [ ] `/dashboard`, `/profile` → `/login?redirectTo=...` 리다이렉트  
 
 2. **Google 로그인**  
-   - [ ] 로그인 성공 후 `/feed` 또는 next 파라미터로 이동  
+   - [ ] 로그인 성공 후 `/dashboard` 또는 next 파라미터로 이동  
    - [ ] 로그인 실패 시 `/login?error=auth_callback_error` + 토스트  
 
 3. **온보딩**  
-   - [ ] 프로필 없을 때 `/feed` 접근 시 `/onboarding` 리다이렉트  
-   - [ ] 3단계 제출 후 `/feed` 이동, profiles + matching_posts 저장  
+   - [ ] 프로필 없을 때 `/dashboard` 접근 시 `/onboarding` 리다이렉트  
+   - [ ] 3단계 제출 후 `/dashboard` 이동, profiles + matching_posts 저장  
 
 4. **피드·찜·연락처**  
    - [ ] 피드 목록 로딩/빈 목록/에러 시 UI 및 토스트  

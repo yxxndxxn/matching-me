@@ -7,6 +7,7 @@ import { hasProfile } from "@/lib/supabase/queries/profiles";
 import { useAuth } from "@/hooks/use-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LoadingState } from "@/components/loading-state";
 
 const PROTECTED_PATHS = ["/dashboard", "/profile"];
 
@@ -32,11 +33,7 @@ export function RedirectToOnboarding({ children }: { children: React.ReactNode }
   }, [user, authLoading, pathname, isProtected, router]);
 
   if (checking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="text-sm text-muted-foreground">로딩 중...</span>
-      </div>
-    );
+    return <LoadingState message="잠시만 기다려 주세요" />;
   }
 
   return <>{children}</>;

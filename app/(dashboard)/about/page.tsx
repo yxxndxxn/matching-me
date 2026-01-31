@@ -13,7 +13,7 @@ export default function AboutPage() {
             남도학숙생을 위한 룸메이트 매칭 플랫폼
           </p>
           <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto leading-relaxed">
-            같은 기숙사(동작관·은평관) 생활을 할 학숙생들과
+            남도학숙(동작관·은평관)에서 생활하는 학숙생들과
             <br />
             나와 꼭 맞는 룸메이트를 찾을 수 있어요.
           </p>
@@ -27,9 +27,9 @@ export default function AboutPage() {
                 <Users className="size-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">같은 기숙사 내 매칭</h3>
+                <h3 className="font-semibold text-foreground">남도학숙 내 매칭</h3>
                 <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                  동작관·은평관 구분에 맞는 룸메이트 공고만 보여드려요. 같은 공간에서 생활할 학숙생들과 쉽게 연결할 수 있습니다.
+                  동작관·은평관 구분에 맞는 룸메이트 공고만 보여드려요. 남도학숙에서 생활할 학숙생들과 쉽게 연결할 수 있습니다.
                 </p>
               </div>
             </div>
@@ -65,7 +65,7 @@ export default function AboutPage() {
               <div>
                 <h3 className="font-semibold text-foreground">안전하고 신뢰할 수 있는</h3>
                 <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                  Google 로그인으로 본인 인증을 하고, 같은 기숙사 학숙생만 이용할 수 있어요. 개인정보는 안전하게 보호됩니다.
+                  Google 로그인으로 본인 인증을 하고, 남도학숙 학숙생만 이용할 수 있어요. 개인정보는 안전하게 보호됩니다.
                 </p>
               </div>
             </div>

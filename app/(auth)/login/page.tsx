@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import { toast } from "sonner";
+import { LoadingState } from "@/components/loading-state";
 
 function GoogleLogo({ className }: { className?: string }) {
   return (
@@ -91,7 +92,7 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">로딩 중...</div>}>
+    <Suspense fallback={<LoadingState message="잠시만 기다려 주세요" />}>
       <LoginContent />
     </Suspense>
   );

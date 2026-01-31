@@ -4,8 +4,8 @@
 
 매칭미? (Matching Me?) 프로젝트의 PostgreSQL 데이터베이스 스키마 설계 문서입니다. Supabase를 기반으로 구축되며, **인증은 `auth.users`(Supabase Auth)** 를 사용하고 별도 `users` 테이블은 두지 않습니다. Row Level Security (RLS) 정책을 통한 데이터 보안을 강조합니다.
 
-- **적용용 SQL**: Supabase SQL Editor에서 바로 실행하려면 [`docs/supabase-schema.sql`](./supabase-schema.sql) 사용
-- **이미 적용된 DB에 변경분만 반영**: [`docs/supabase-update-guide.md`](./supabase-update-guide.md) 참고
+- **적용용 SQL**: Supabase SQL Editor에서 바로 실행하려면 [`supabase-schema.sql`](./supabase-schema.sql) 사용
+- **이미 적용된 DB에 변경분만 반영**: [`supabase-update-guide.md`](./supabase-update-guide.md) 참고
 
 ---
 
@@ -295,13 +295,13 @@ ORDER BY b.created_at DESC;
 3. `daily_limits` 테이블 생성
 4. 해당 테이블 RLS 정책 적용
 
-**한 번에 적용**: [`docs/supabase-schema.sql`](./supabase-schema.sql) 파일을 Supabase SQL Editor에 붙여 넣어 실행하면 위 단계가 모두 적용됩니다.
+**한 번에 적용**: [`supabase-schema.sql`](./supabase-schema.sql) 파일을 Supabase SQL Editor에 붙여 넣어 실행하면 위 단계가 모두 적용됩니다.
 
 ---
 
 ## 🌱 시드 데이터 (Seed Data)
 
-테스트용 샘플 데이터는 [`docs/seed_data_matching_me.sql`](./seed_data_matching_me.sql)에서 관리합니다.
+테스트용 샘플 데이터는 [`seed_data_matching_me.sql`](./seed_data_matching_me.sql)에서 관리합니다.
 
 | 테이블 | 시드 포함 | 비고 |
 |--------|-----------|------|
@@ -328,7 +328,7 @@ ORDER BY b.created_at DESC;
 - 타임스탬프는 `TIMESTAMPTZ` 사용
 - 외래 키에 `ON DELETE CASCADE` 적용
 - ENUM 및 CHECK로 데이터 무결성 보장
-- 상세 분석: [`docs/db-schema-analysis.md`](./db-schema-analysis.md)
+- 상세 분석: [`db-schema-analysis.md`](./db-schema-analysis.md)
 
 ---
 

@@ -4,7 +4,7 @@
 -- Generated: 2026-01-31
 -- Purpose: 초기 테스트 데이터 생성 (UI/매칭 기능 검증용)
 -- Note: 실제 서비스 데이터가 아닌 테스트용 샘플 데이터
--- Schema: docs/supabase-schema.sql 기준 (profiles, matching_posts, view_logs, bookmarks, daily_limits)
+-- Schema: docs/database/supabase-schema.sql 기준 (profiles, matching_posts, view_logs, bookmarks, daily_limits)
 -- =====================================================
 --
 -- [실행 전 필수]
@@ -143,7 +143,7 @@ SELECT dormitory, COUNT(*) AS user_count FROM profiles GROUP BY dormitory ORDER 
 SELECT gender, COUNT(*) AS user_count FROM profiles GROUP BY gender;
 
 -- =====================================================
--- Schema Compliance (docs/supabase-schema.sql 기준 재점검)
+-- Schema Compliance (supabase-schema.sql 기준 재점검)
 -- =====================================================
 -- [x] profiles: id(FK auth.users), name, gender(gender_type), major_category(major_category_type),
 --     grade(TEXT '1학년'~'4학년'), dormitory(dormitory_type), other_contact, kakao_id, chronotype, sleeping_habit,

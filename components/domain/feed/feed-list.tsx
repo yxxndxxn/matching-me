@@ -18,7 +18,7 @@ import type { UserProfile } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { AlertCircle, RefreshCw } from "lucide-react"
+import { AlertCircle, RefreshCw, Loader2 } from "lucide-react"
 
 const tabs = [
   { id: "all", label: "전체 매칭" },
@@ -138,10 +138,40 @@ export function FeedList() {
       <main className="px-4 sm:px-6 lg:px-6 py-4">
         <div className="max-w-2xl mx-auto lg:max-w-4xl">
           {loading ? (
-            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-48 rounded-2xl bg-muted" />
-              ))}
+            <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+              <div className="size-20 rounded-full bg-secondary flex items-center justify-center mb-6">
+                <Loader2 className="size-10 text-muted-foreground animate-spin" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                나와 맞는 룸메이트를 찾고 있어요 ✨
+              </h3>
+              <p className="text-sm text-muted-foreground mb-8 max-w-[340px]">
+                잠시만 기다려 주세요.
+              </p>
+              <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0 w-full">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-card rounded-2xl p-6 border border-border/40 shadow-sm">
+                    <div className="flex gap-5">
+                      <Skeleton className="size-[72px] shrink-0 rounded-full bg-muted" />
+                      <div className="flex-1 min-w-0 space-y-3">
+                        <div className="flex justify-between gap-4">
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-24 bg-muted" />
+                            <Skeleton className="h-3 w-32 bg-muted" />
+                          </div>
+                          <Skeleton className="size-14 shrink-0 rounded-full bg-muted" />
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          <Skeleton className="h-6 w-16 rounded-full bg-muted" />
+                          <Skeleton className="h-6 w-14 rounded-full bg-muted" />
+                          <Skeleton className="h-6 w-20 rounded-full bg-muted" />
+                        </div>
+                        <Skeleton className="h-10 w-full rounded-lg bg-muted" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-16 px-6 text-center">

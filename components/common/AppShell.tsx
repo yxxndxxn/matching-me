@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation"
 
 import { Sidebar } from "@/components/common/Sidebar"
 import { BottomNav } from "@/components/common/BottomNav"
+import { ScrollToTop } from "@/components/common/ScrollToTop"
 
 export interface AppShellProps {
   children: React.ReactNode
@@ -26,11 +27,17 @@ export function AppShell({ children, dailyRevealsRemaining }: AppShellProps) {
   const showNav = shouldShowNav(pathname ?? "")
 
   if (!showNav) {
-    return <>{children}</>
+    return (
+      <>
+        <ScrollToTop />
+        {children}
+      </>
+    )
   }
 
   return (
     <>
+      <ScrollToTop />
       <Sidebar dailyRevealsRemaining={dailyRevealsRemaining} />
       <div className="min-h-screen bg-background pb-20 lg:pb-0 lg:ml-32">
         {children}

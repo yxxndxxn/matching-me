@@ -2,11 +2,12 @@
 
 // 프로필 수정 폼: 현재 프로필 데이터로 폼 채움 → PUT /api/profile → 저장 후 콜백
 
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ChevronLeft, ChevronDown, User, Users, Check } from "lucide-react"
+import { ChevronLeft, ChevronDown, User, Users, Check, Camera } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
@@ -46,6 +47,9 @@ function profileToDefaultValues(profile: UserProfile): Partial<OnboardingFormSch
 export function ProfileEditForm({ profile, onSaved, onCancel }: ProfileEditFormProps) {
   const [showMajorDropdown, setShowMajorDropdown] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(profile.avatarUrl)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const form = useForm<OnboardingFormSchemaType>({
     resolver: zodResolver(onboardingFormSchema),
@@ -66,6 +70,30 @@ export function ProfileEditForm({ profile, onSaved, onCancel }: ProfileEditFormP
   const noiseSensitivity = watch("noise_sensitivity")
   const introduction = watch("introduction")
 
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingAvatar(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      const res = await fetch("/api/profile/avatar", { method: "POST", body: formData })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        toast.error("사진 업로드에 실패했어요.", { description: (json.error as string) ?? "다시 시도해 주세요." })
+        return
+      }
+      const url = json.avatar_url as string
+      if (url) setAvatarUrl(url)
+      toast.success("사진이 변경되었어요. 저장하기를 눌러 반영해 주세요.")
+    } catch {
+      toast.error("사진 업로드에 실패했어요.", { description: "네트워크를 확인해 주세요." })
+    } finally {
+      setUploadingAvatar(false)
+      e.target.value = ""
+    }
+  }
+
   const onSubmit = async (data: OnboardingFormSchemaType) => {
     setSaving(true)
     try {
@@ -74,6 +102,7 @@ export function ProfileEditForm({ profile, onSaved, onCancel }: ProfileEditFormP
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: data.name,
+          avatar_url: avatarUrl ?? null,
           gender: data.gender,
           major_category: data.major_category,
           grade: data.grade,
@@ -104,16 +133,48 @@ export function ProfileEditForm({ profile, onSaved, onCancel }: ProfileEditFormP
 
   return (
     <div className="min-h-screen pb-24 bg-background flex flex-col">
-      <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center">
-        <div className="w-10 shrink-0 flex items-center">
-          <button type="button" onClick={onCancel} className="p-1 -ml-1 text-muted-foreground hover:text-foreground transition-colors" aria-label="뒤로">
-            <ChevronLeft className="w-6 h-6" />
-          </button>
+      <div className="max-w-2xl mx-auto lg:max-w-4xl w-full flex flex-col flex-1">
+        <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center">
+          <div className="w-10 shrink-0 flex items-center">
+            <button type="button" onClick={onCancel} className="p-1 -ml-1 text-muted-foreground hover:text-foreground transition-colors" aria-label="뒤로">
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+          </div>
+          <h1 className="flex-1 text-center text-lg font-semibold text-foreground">프로필 수정</h1>
+          <div className="w-10 shrink-0" />
         </div>
-        <h1 className="flex-1 text-center text-lg font-semibold text-foreground">프로필 수정</h1>
-        <div className="w-10 shrink-0" />
-      </div>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 px-6 py-6 space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 px-6 py-6 space-y-8">
+        <section className="space-y-4">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">프로필 사진</h2>
+          <div className="flex flex-col items-center gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              className="relative group rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              aria-label="프로필 사진 변경"
+            >
+              <Avatar className="size-24 border-4 border-primary/20">
+                <AvatarImage src={avatarUrl || "/placeholder.svg"} alt={name} />
+                <AvatarFallback className="bg-secondary text-secondary-foreground text-2xl font-semibold">
+                  {name?.slice(0, 2).toUpperCase() ?? "?"}
+                </AvatarFallback>
+              </Avatar>
+              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera className="size-8 text-white" />
+              </span>
+            </button>
+            <p className="text-xs text-muted-foreground">클릭하여 사진 변경 (JPEG, PNG, WebP, 2MB 이하)</p>
+          </div>
+        </section>
+
         <section className="space-y-4">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">기본 정보</h2>
           <div className="space-y-2">
@@ -254,7 +315,8 @@ export function ProfileEditForm({ profile, onSaved, onCancel }: ProfileEditFormP
             {saving ? "저장 중…" : "저장하기"}
           </Button>
         </div>
-      </form>
+        </form>
+      </div>
     </div>
   )
 }

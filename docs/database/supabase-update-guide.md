@@ -11,7 +11,7 @@
 |------|------|
 | **파괴적 변경 금지** | `DROP TABLE`, `TRUNCATE` 사용하지 않음. 기존 데이터 유지. |
 | **증분 업데이트** | `ALTER`, `ADD`, `CREATE INDEX` 등으로 변경분만 적용. |
-| **마이그레이션 파일** | 변경 사항은 `docs/migrations/` 에 `YYYYMMDD_HHMMSS_설명_vN.sql` 형식으로 저장. |
+| **마이그레이션 파일** | 변경 사항은 `docs/database/migrations/` 에 `YYYYMMDD_HHMMSS_설명_vN.sql` 형식으로 저장. |
 | **실행 순서** | Supabase SQL Editor에서 마이그레이션 SQL만 복사·실행. |
 
 ---
@@ -20,10 +20,10 @@
 
 ```
 1. 로컬에서 변경된 스키마 확인
-   → docs/supabase-schema.sql, docs/db-schema.md 등과 비교
+   → supabase-schema.sql, db-schema.md 등과 비교
 
 2. 증분 마이그레이션 SQL 작성
-   → docs/migrations/YYYYMMDD_HHMMSS_변경내용_v1.sql
+   → migrations/YYYYMMDD_HHMMSS_변경내용_v1.sql
    → 상단에 변경 사유, 영향도, Rollback 구문 포함
 
 3. Supabase 대시보드에서 실행
@@ -101,7 +101,7 @@ CREATE INDEX idx_view_logs_viewer_date
 
 스키마는 그대로 두고 **테스트 데이터만** 넣거나 갱신하려면:
 
-1. Supabase SQL Editor에서 [`docs/seed_data_matching_me.sql`](./seed_data_matching_me.sql) 내용 실행  
+1. Supabase SQL Editor에서 [`seed_data_matching_me.sql`](./seed_data_matching_me.sql) 내용 실행  
 2. 실행 전: `auth.users` 에 시드에서 사용하는 UUID 10명이 있어야 함 (파일 상단 주석 참고)  
 3. `ON CONFLICT` 로 이미 있는 행은 건너뛰므로, 필요한 블록만 골라서 실행해도 됨  
 
@@ -109,17 +109,17 @@ CREATE INDEX idx_view_logs_viewer_date
 
 ## 5. 앞으로 스키마가 바뀔 때
 
-1. **`docs/supabase-schema.sql`** 를 수정 (신규 테이블/컬럼/인덱스 등 반영)  
+1. **`supabase-schema.sql`** 를 수정 (신규 테이블/컬럼/인덱스 등 반영)  
 2. **증분 마이그레이션** 작성  
-   - 파일: `docs/migrations/YYYYMMDD_HHMMSS_변경내용_v1.sql`  
+   - 파일: `migrations/YYYYMMDD_HHMMSS_변경내용_v1.sql`  
    - 내용: 이미 올라가 있는 Supabase에는 **추가/변경분만** 적용하는 `ALTER`, `CREATE INDEX` 등  
-3. **`docs/db-schema.md`** 등 DB 설계 문서를 같은 내용으로 맞춤  
+3. **`db-schema.md`** 등 DB 설계 문서를 같은 내용으로 맞춤  
 4. Supabase SQL Editor에서 해당 마이그레이션만 실행 후, 검증 쿼리로 확인  
 
 ---
 
 ## 6. 참고
 
-- **전체 스키마 처음 적용**: [`docs/supabase-schema.sql`](./supabase-schema.sql) 한 번에 실행 (테이블이 없을 때만)  
-- **마이그레이션 정책**: [.cursor/rules/700-database-admin-policy.mdc](../.cursor/rules/700-database-admin-policy.mdc)  
-- **테이블 목록/RLS**: [docs/db-schema.md](./db-schema.md)
+- **전체 스키마 처음 적용**: [`supabase-schema.sql`](./supabase-schema.sql) 한 번에 실행 (테이블이 없을 때만)  
+- **마이그레이션 정책**: [.cursor/rules/700-database-admin-policy.mdc](../../.cursor/rules/700-database-admin-policy.mdc)  
+- **테이블 목록/RLS**: [db-schema.md](./db-schema.md)

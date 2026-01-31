@@ -65,7 +65,19 @@ export default function BookmarksPage() {
         </div>
         <div className="px-6 py-4 space-y-3">
           {loading ? (
-            <Skeleton className="h-24 rounded-2xl" />
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-card rounded-2xl p-5 border border-border/50 flex items-center gap-4">
+                  <Skeleton className="size-14 shrink-0 rounded-full bg-muted" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-24 bg-muted" />
+                    <Skeleton className="h-3 w-40 bg-muted" />
+                  </div>
+                  <Skeleton className="size-5 shrink-0 rounded bg-muted" />
+                </div>
+              ))}
+              </div>
+            </div>
           ) : bookmarks.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">
               <p className="text-muted-foreground">아직 찜한 룸메이트가 없어요.</p>

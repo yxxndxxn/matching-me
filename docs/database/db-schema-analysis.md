@@ -166,10 +166,10 @@
    - `profiles`, `matching_posts`, `view_logs`, `bookmarks`, `daily_limits` CREATE TABLE
    - 인덱스, `updated_at` 트리거
    - RLS 활성화 및 정책 CREATE
-   - 파일: `docs/supabase-schema.sql` (Supabase SQL Editor에 붙여넣기용)
+   - 파일: `supabase-schema.sql` (Supabase SQL Editor에 붙여넣기용)
 
 2. **기존 db-schema.md 반영**
-   - `docs/db-schema.md`를 위 최종 설계와 동일하게 수정 (auth.users 사용, users 테이블 제거 반영)
+   - `db-schema.md`를 위 최종 설계와 동일하게 수정 (auth.users 사용, users 테이블 제거 반영)
 
 3. **types/ 최신화**
    - `types/database.ts`: 스키마 기반 `Database` 타입

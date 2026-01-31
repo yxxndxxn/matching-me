@@ -20,7 +20,7 @@ Supabase SDK + Google OAuth 기준 **실제 구현을 위한 Step-by-step 로직
 | **프로필 API** | 501 | GET/POST/PUT/DELETE 모두 미구현 |
 | **useAuth / AuthProvider** | 스텁 | `return null` |
 | **lib/supabase/queries/*** | 스텁 | `getProfile` 등 `return null` |
-| **DB 스키마** | 적용됨 | `docs/supabase-schema.sql` 기준 profiles, matching_posts 등 (테이블명: profiles, not mm_*) |
+| **DB 스키마** | 적용됨 | `docs/database/supabase-schema.sql` 기준 profiles, matching_posts 등 (테이블명: profiles, not mm_*) |
 | **타입** | `types/database.ts` | Tables 키는 `mm_profiles` 등 → 실제 DB는 `profiles` 사용 시 키 불일치 가능 |
 
 ---
@@ -140,8 +140,8 @@ Supabase SDK + Google OAuth 기준 **실제 구현을 위한 Step-by-step 로직
 
 - [Supabase Auth - Next.js App Router](https://supabase.com/docs/guides/auth/auth-helpers/nextjs-app-router)
 - [Supabase Auth - Google OAuth](https://supabase.com/docs/guides/auth/social-login/auth-google)
-- [Row Level Security](https://supabase.com/docs/guides/auth/row-level-security) — `docs/db-schema.md`, `docs/supabase-schema.sql`
-- 프로젝트: `docs/PRD.md`, `docs/FLOW.md`, `docs/tech-stack.md`, `docs/db-schema.md`, `docs/supabase-update-guide.md`
+- [Row Level Security](https://supabase.com/docs/guides/auth/row-level-security) — [db-schema.md](../database/db-schema.md), [supabase-schema.sql](../database/supabase-schema.sql)
+- 프로젝트: [PRD.md](./PRD.md), [FLOW.md](../architecture/FLOW.md), [tech-stack.md](../technical/tech-stack.md), [db-schema.md](../database/db-schema.md), [supabase-update-guide.md](../database/supabase-update-guide.md)
 
 ---
 
