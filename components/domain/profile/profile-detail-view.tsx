@@ -40,7 +40,7 @@ interface ProfileDetailViewProps {
   onBack: () => void
   dailyRevealsRemaining?: number
   maxDailyReveals?: number
-  onRevealContact?: (profile: UserProfile) => void
+  onRevealContact?: (profile: UserProfile) => void | Promise<boolean>
   isRevealed?: boolean
   revealedContact?: RevealedContact
 }
@@ -93,6 +93,7 @@ export function ProfileDetailView({
   const [contactRevealed, setContactRevealed] = useState(isRevealed)
   const displayContact = revealedContact ?? { otherContact: profile.otherContact ?? "", kakaoId: profile.kakaoId ?? "" }
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [revealLoading, setRevealLoading] = useState(false)
   const lifestyleTags = getLifestyleTags(profile)
   const majorCategoryLabel = getMajorCategoryLabel(profile.majorCategory)
 
@@ -107,11 +108,16 @@ export function ProfileDetailView({
     }
     setShowConfirmDialog(true)
   }
-  const handleConfirmReveal = () => {
+  const handleConfirmReveal = async () => {
     setShowConfirmDialog(false)
-    setContactRevealed(true)
-    onRevealContact?.(profile)
-    toast.success("연락처가 공개되었습니다!", { description: "마이페이지 찜 목록에서 다시 확인할 수 있어요." })
+    setRevealLoading(true)
+    try {
+      const result = onRevealContact?.(profile)
+      const success = result && typeof (result as Promise<boolean>).then === "function" ? await (result as Promise<boolean>) : !!result
+      if (success) setContactRevealed(true)
+    } finally {
+      setRevealLoading(false)
+    }
   }
   const handleCopy = async (text: string, label: string) => {
     await navigator.clipboard.writeText(text)
@@ -312,8 +318,10 @@ export function ProfileDetailView({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmReveal} className="bg-indigo-500 hover:bg-indigo-600">확인하기</AlertDialogAction>
+            <AlertDialogCancel disabled={revealLoading}>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmReveal} disabled={revealLoading} className="bg-indigo-500 hover:bg-indigo-600">
+              {revealLoading ? "처리 중…" : "확인하기"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

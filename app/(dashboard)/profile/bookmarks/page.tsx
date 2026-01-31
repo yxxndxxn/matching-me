@@ -5,7 +5,7 @@
 import { useBookmarks } from "@/hooks/use-bookmarks";
 import { useRouter } from "next/navigation";
 import { ProfileDetailView } from "@/components/domain/profile/profile-detail-view";
-import { useDailyLimit } from "@/hooks/use-daily-limit";
+import { useDailyLimitContext } from "@/components/providers/daily-limit-provider";
 import { useContactReveal, type RevealedContact } from "@/hooks/use-contact-reveal";
 import { useRevealedIds } from "@/hooks/use-revealed-ids";
 import { useState } from "react";
@@ -18,19 +18,21 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function BookmarksPage() {
   const router = useRouter();
   const { bookmarks, loading } = useBookmarks();
-  const { remaining: dailyRevealsRemaining } = useDailyLimit();
+  const { remaining: dailyRevealsRemaining } = useDailyLimitContext();
   const { reveal } = useContactReveal();
   const { revealedIds, addRevealedId } = useRevealedIds();
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const [revealedContacts, setRevealedContacts] = useState<Record<string, RevealedContact>>({});
 
-  const handleReveal = async (p: UserProfile) => {
+  const handleReveal = async (p: UserProfile): Promise<boolean> => {
     const postId = String(p.id);
-    const { success, contact } = await reveal(postId);
+    const { success, error: err, contact } = await reveal(postId);
     if (success) {
       addRevealedId(postId);
       if (contact) setRevealedContacts((prev) => ({ ...prev, [postId]: contact }));
+      return true;
     }
+    return false;
   };
   const isRevealed = (id: number | string) => revealedIds.has(String(id));
 

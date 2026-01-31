@@ -3,7 +3,7 @@
 // 연락처 공개 (Phase 2.14): API 호출 → view_logs + daily_limits 갱신 → 남은 횟수 refetch, 응답에 연락처 포함
 
 import { useCallback, useState } from "react";
-import { useDailyLimit } from "./use-daily-limit";
+import { useDailyLimitContext } from "@/components/providers/daily-limit-provider";
 
 export interface RevealedContact {
   otherContact: string;
@@ -15,7 +15,7 @@ export function useContactReveal(): {
   loading: boolean;
 } {
   const [loading, setLoading] = useState(false);
-  const { refetch: refetchDaily } = useDailyLimit();
+  const { refetch: refetchDaily } = useDailyLimitContext();
 
   const reveal = useCallback(
     async (postId: string): Promise<{ success: boolean; error?: string; contact?: RevealedContact }> => {

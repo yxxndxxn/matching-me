@@ -82,15 +82,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
+    console.error("[api/matching/reveal-contact]", e);
     if (msg.includes("Missing Supabase env") || msg.includes("NEXT_PUBLIC_SUPABASE")) {
       return NextResponse.json(
         { error: "서버 설정이 필요합니다. 관리자에게 문의해 주세요." },
         { status: 503 }
       );
     }
-    return NextResponse.json(
-      { error: "연락처 공개 처리 중 오류가 발생했습니다." },
-      { status: 500 }
-    );
+    const body: { error: string; detail?: string } = {
+      error: "연락처 공개 처리 중 오류가 발생했습니다.",
+    };
+    if (process.env.NODE_ENV === "development") {
+      body.detail = msg;
+    }
+    return NextResponse.json(body, { status: 500 });
   }
 }

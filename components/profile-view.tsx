@@ -32,7 +32,7 @@ import { ProfileDetailView } from "@/components/domain/profile/profile-detail-vi
 import { useAuth } from "@/hooks/use-auth"
 import { useProfile } from "@/hooks/use-profile"
 import { useBookmarks } from "@/hooks/use-bookmarks"
-import { useDailyLimit } from "@/hooks/use-daily-limit"
+import { useDailyLimitContext } from "@/components/providers/daily-limit-provider"
 import { useContactReveal, type RevealedContact } from "@/hooks/use-contact-reveal"
 import { useRevealedIds } from "@/hooks/use-revealed-ids"
 import { LoadingState } from "@/components/loading-state"
@@ -155,7 +155,7 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
   const { user, signOut } = useAuth()
   const { profile: profileData, loading: profileLoading, error: profileError, refetch: refetchProfile } = useProfile()
   const { bookmarks: savedProfiles } = useBookmarks()
-  const { remaining: dailyRevealsRemaining } = useDailyLimit()
+  const { remaining: dailyRevealsRemaining } = useDailyLimitContext()
   const { reveal: revealContact } = useContactReveal()
   const { revealedIds, addRevealedId } = useRevealedIds()
   const [revealedContacts, setRevealedContacts] = useState<Record<string, RevealedContact>>({})
@@ -199,13 +199,17 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
       setWithdrawing(false)
     }
   }
-  const handleRevealContact = async (p: UserProfile) => {
+  const handleRevealContact = async (p: UserProfile): Promise<boolean> => {
     const postId = String(p.id)
-    const { success, contact } = await revealContact(postId)
+    const { success, error: err, contact } = await revealContact(postId)
     if (success) {
       addRevealedId(postId)
       if (contact) setRevealedContacts((prev) => ({ ...prev, [postId]: contact }))
+      toast.success("연락처가 공개되었어요.")
+      return true
     }
+    toast.error(err ?? "연락처 공개에 실패했어요")
+    return false
   }
   const isProfileRevealed = (profileId: number | string) => revealedIds.has(String(profileId))
   const majorCategoryLabel = profile ? getMajorCategoryLabel(profile.majorCategory) : ""

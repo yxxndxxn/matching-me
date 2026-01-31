@@ -6,18 +6,18 @@ import { Search, User, Info } from "lucide-react"
 
 import { cn } from "@/lib/utils/cn"
 import { useAuth } from "@/hooks/use-auth"
-import { useDailyLimit } from "@/hooks/use-daily-limit"
+import { useDailyLimitContext } from "@/components/providers/daily-limit-provider"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export interface SidebarProps {
-  /** @deprecated 연락처 공개 남은 횟수는 Sidebar 내부에서 useDailyLimit()으로 조회 */
+  /** @deprecated 연락처 공개 남은 횟수는 DailyLimitContext로 공유 */
   dailyRevealsRemaining?: number
 }
 
 export function Sidebar({ dailyRevealsRemaining: _propRemaining }: SidebarProps) {
   const pathname = usePathname()
   const { user } = useAuth()
-  const { remaining: dailyRevealsRemaining } = useDailyLimit()
+  const { remaining: dailyRevealsRemaining } = useDailyLimitContext()
   const isHome = pathname === "/dashboard" || pathname === "/" || pathname.startsWith("/dashboard/")
   const isProfile = pathname.startsWith("/profile")
   const sidebarAvatarUrl =

@@ -11,7 +11,7 @@ import { EmptyState } from "@/components/empty-state"
 import { ProfileDetailView } from "@/components/domain/profile/profile-detail-view"
 import { useMatchingFeed } from "@/hooks/use-matching-feed"
 import { useBookmarks } from "@/hooks/use-bookmarks"
-import { useDailyLimit } from "@/hooks/use-daily-limit"
+import { useDailyLimitContext } from "@/components/providers/daily-limit-provider"
 import { useContactReveal, type RevealedContact } from "@/hooks/use-contact-reveal"
 import { useRevealedIds } from "@/hooks/use-revealed-ids"
 import type { UserProfile } from "@/lib/types"
@@ -49,7 +49,7 @@ export function FeedList() {
 
   const { profiles, loading, error, refetch } = useMatchingFeed(feedFilters)
   const { add: addBookmark, remove: removeBookmark, isBookmarked } = useBookmarks()
-  const { remaining: dailyRevealsRemaining } = useDailyLimit()
+  const { remaining: dailyRevealsRemaining } = useDailyLimitContext()
   const { reveal: revealContact } = useContactReveal()
   const { revealedIds, addRevealedId } = useRevealedIds()
   const [revealedContacts, setRevealedContacts] = useState<Record<string, RevealedContact>>({})
@@ -79,16 +79,17 @@ export function FeedList() {
     else toast.success("찜 해제했어요")
   }
 
-  const handleRevealContact = async (profile: UserProfile) => {
+  const handleRevealContact = async (profile: UserProfile): Promise<boolean> => {
     const postId = String(profile.id)
     const { success, error: err, contact } = await revealContact(postId)
     if (success) {
       addRevealedId(postId)
       if (contact) setRevealedContacts((prev) => ({ ...prev, [postId]: contact }))
       toast.success("연락처가 공개되었어요.")
-    } else {
-      toast.error(err ?? "연락처 공개에 실패했어요")
+      return true
     }
+    toast.error(err ?? "연락처 공개에 실패했어요")
+    return false
   }
 
   const isProfileSaved = (profileId: number | string) => isBookmarked(String(profileId))

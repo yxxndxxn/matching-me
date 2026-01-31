@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/common/AppShell"
+import { DailyLimitProvider } from "@/components/providers/daily-limit-provider"
 import { RedirectToOnboarding } from "@/components/RedirectToOnboarding"
 
 export default function DashboardLayout({
@@ -8,7 +9,9 @@ export default function DashboardLayout({
 }) {
   return (
     <RedirectToOnboarding>
-      <AppShell>{children}</AppShell>
+      <DailyLimitProvider>
+        <AppShell>{children}</AppShell>
+      </DailyLimitProvider>
     </RedirectToOnboarding>
   )
 }
