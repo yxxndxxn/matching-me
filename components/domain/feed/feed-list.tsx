@@ -19,7 +19,7 @@ export function FeedList() {
   const [showEmpty, setShowEmpty] = useState(false)
   const [selectedCandidate, setSelectedCandidate] = useState<UserProfile | null>(null)
   const [savedProfiles, setSavedProfiles] = useState<UserProfile[]>([])
-  const [revealedProfiles, setRevealedProfiles] = useState<Set<number>>(new Set())
+  const [revealedProfiles, setRevealedProfiles] = useState<Set<number | string>>(new Set())
   const [dailyRevealsRemaining, setDailyRevealsRemaining] = useState(3)
   const [filters, setFilters] = useState<FilterState>({
     dormitory: "all",
@@ -35,7 +35,7 @@ export function FeedList() {
     }
   }
 
-  const handleUnsaveProfile = (profileId: number) => {
+  const handleUnsaveProfile = (profileId: number | string) => {
     setSavedProfiles(savedProfiles.filter((p) => p.id !== profileId))
   }
 
@@ -44,8 +44,8 @@ export function FeedList() {
     setDailyRevealsRemaining((prev) => Math.max(0, prev - 1))
   }
 
-  const isProfileSaved = (profileId: number) => savedProfiles.some((p) => p.id === profileId)
-  const isProfileRevealed = (profileId: number) => revealedProfiles.has(profileId)
+  const isProfileSaved = (profileId: number | string) => savedProfiles.some((p) => p.id === profileId)
+  const isProfileRevealed = (profileId: number | string) => revealedProfiles.has(profileId)
 
   const toggleSave = (profile: UserProfile) => {
     if (isProfileSaved(profile.id)) handleUnsaveProfile(profile.id)

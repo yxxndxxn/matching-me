@@ -122,7 +122,7 @@ interface ProfileViewProps {
   savedProfiles?: UserProfile[]
   onRevealContact?: (profile: UserProfile) => void
   dailyRevealsRemaining?: number
-  isProfileRevealed?: (profileId: number) => boolean
+  isProfileRevealed?: (profileId: number | string) => boolean
 }
 
 export function ProfileView({

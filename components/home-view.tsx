@@ -16,11 +16,11 @@ const tabs = [
 
 interface HomeViewProps {
   onSaveProfile?: (profile: UserProfile) => void
-  onUnsaveProfile?: (profileId: number) => void
+  onUnsaveProfile?: (profileId: number | string) => void
   onRevealContact?: (profile: UserProfile) => void
   dailyRevealsRemaining?: number
-  isProfileSaved?: (profileId: number) => boolean
-  isProfileRevealed?: (profileId: number) => boolean
+  isProfileSaved?: (profileId: number | string) => boolean
+  isProfileRevealed?: (profileId: number | string) => boolean
 }
 
 export function HomeView({

@@ -29,8 +29,14 @@ export const sleepingHabits = [
 
 export type SleepingHabit = (typeof sleepingHabits)[number]["value"];
 
+/**
+ * UI용 프로필 타입 (피드 카드·상세 등).
+ * id: 샘플 데이터는 number, 실제 API는 post id (string UUID).
+ * userId: 실제 API에서 프로필 소유자 식별용 (선택).
+ */
 export interface UserProfile {
-  id: number;
+  id: number | string;
+  userId?: string;
   name: string;
   gender: "male" | "female";
   majorCategory: MajorCategory;
