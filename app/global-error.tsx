@@ -6,7 +6,7 @@
  * Tailwind/테마가 적용되지 않을 수 있으므로 인라인 스타일 폴백 사용.
  */
 export default function GlobalError({
-  error,
+  error: _error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -87,6 +87,8 @@ export default function GlobalError({
               maxWidth: "16rem",
             }}
           >
+            {/* global-error는 루트 레이아웃 대체 시 사용되므로 Link 대신 a 사용 (전체 문서 새로고침) */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
               href="/"
               style={{

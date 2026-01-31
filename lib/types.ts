@@ -1,5 +1,7 @@
 // Unified User Profile Type for Matching Me App (from tmp-v0)
 
+import type { MatchingPostRow, ProfileRow } from "@/types/database";
+
 // Major Category options
 export const majorCategories = [
   { value: "engineering", label: "공학" },
@@ -42,7 +44,7 @@ export interface UserProfile {
   majorCategory: MajorCategory;
   grade: string;
   dormitory: Dormitory;
-  phone: string;
+  otherContact: string;
   kakaoId: string;
   chronotype: "morning" | "night";
   sleepingHabit: SleepingHabit;
@@ -52,6 +54,43 @@ export interface UserProfile {
   introduction: string;
   avatarUrl?: string;
   matchScore?: number;
+}
+
+/** DB ProfileRow → UI UserProfile (마이페이지 등) */
+export function profileRowToUserProfile(
+  row: ProfileRow,
+  options?: { id?: string; matchScore?: number }
+): UserProfile {
+  return {
+    id: options?.id ?? row.id,
+    userId: row.id,
+    name: row.name,
+    gender: row.gender,
+    majorCategory: row.major_category,
+    grade: row.grade,
+    dormitory: row.dormitory,
+    otherContact: row.other_contact ?? "",
+    kakaoId: row.kakao_id ?? "",
+    chronotype: row.chronotype ?? "morning",
+    sleepingHabit: row.sleeping_habit,
+    smoking: row.smoking,
+    cleanliness: row.cleanliness ?? 3,
+    noiseSensitivity: row.noise_sensitivity ?? 3,
+    introduction: row.introduction ?? "",
+    avatarUrl: row.avatar_url ?? undefined,
+    matchScore: options?.matchScore,
+  };
+}
+
+/** 피드 아이템 (post + profile) → UI UserProfile (id = post.id, matchScore = post.match_score) */
+export function feedItemToUserProfile(item: {
+  post: MatchingPostRow;
+  profile: ProfileRow;
+}): UserProfile {
+  return profileRowToUserProfile(item.profile, {
+    id: item.post.id,
+    matchScore: item.post.match_score ?? undefined,
+  });
 }
 
 export function getMajorCategoryLabel(category: MajorCategory): string {
@@ -86,7 +125,7 @@ export const sampleProfiles: UserProfile[] = [
     majorCategory: "engineering",
     grade: "2학년",
     dormitory: "dongjak",
-    phone: "010-1234-5678",
+    otherContact: "",
     kakaoId: "seoyeon_kim",
     chronotype: "morning",
     sleepingHabit: "none",
@@ -105,7 +144,7 @@ export const sampleProfiles: UserProfile[] = [
     majorCategory: "social",
     grade: "3학년",
     dormitory: "dongjak",
-    phone: "010-2345-6789",
+    otherContact: "",
     kakaoId: "minjun_park",
     chronotype: "night",
     sleepingHabit: "snoring",
@@ -124,7 +163,7 @@ export const sampleProfiles: UserProfile[] = [
     majorCategory: "humanities",
     grade: "1학년",
     dormitory: "eunpyeong",
-    phone: "010-3456-7890",
+    otherContact: "",
     kakaoId: "jieun_lee",
     chronotype: "morning",
     sleepingHabit: "none",
@@ -143,7 +182,7 @@ export const sampleProfiles: UserProfile[] = [
     majorCategory: "engineering",
     grade: "4학년",
     dormitory: "dongjak",
-    phone: "010-4567-8901",
+    otherContact: "",
     kakaoId: "junho_choi",
     chronotype: "night",
     sleepingHabit: "grinding",
@@ -162,7 +201,7 @@ export const sampleProfiles: UserProfile[] = [
     majorCategory: "humanities",
     grade: "2학년",
     dormitory: "eunpyeong",
-    phone: "010-5678-9012",
+    otherContact: "",
     kakaoId: "haneul_jung",
     chronotype: "morning",
     sleepingHabit: "none",
@@ -183,7 +222,7 @@ export const currentUserProfile: UserProfile = {
   majorCategory: "engineering",
   grade: "3학년",
   dormitory: "dongjak",
-  phone: "010-9876-5432",
+  otherContact: "",
   kakaoId: "gildong_hong",
   chronotype: "night",
   sleepingHabit: "none",

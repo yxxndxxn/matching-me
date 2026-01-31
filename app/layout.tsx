@@ -32,7 +32,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppShell>{children}</AppShell>
-        <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 3000,
+            classNames: { title: "!text-center", description: "!text-center" },
+          }}
+        />
       </body>
     </html>
   );

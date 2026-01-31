@@ -3,7 +3,3 @@
 export function validateEmail() {
   return null;
 }
-
-export function validatePhoneNumber() {
-  return null;
-}

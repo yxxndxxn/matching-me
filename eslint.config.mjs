@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // 레거시 참고용, 상용 빌드 제외
+    "tmp-v0/**",
   ]),
 ]);
 

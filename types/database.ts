@@ -20,27 +20,27 @@ export type Grade = "1학년" | "2학년" | "3학년" | "4학년";
 export interface Database {
   public: {
     Tables: {
-      mm_profiles: {
+      profiles: {
         Row: ProfileRow;
         Insert: ProfileInsert;
         Update: ProfileUpdate;
       };
-      mm_matching_posts: {
+      matching_posts: {
         Row: MatchingPostRow;
         Insert: MatchingPostInsert;
         Update: MatchingPostUpdate;
       };
-      mm_view_logs: {
+      view_logs: {
         Row: ViewLogRow;
         Insert: ViewLogInsert;
         Update: ViewLogUpdate;
       };
-      mm_bookmarks: {
+      bookmarks: {
         Row: BookmarkRow;
         Insert: BookmarkInsert;
         Update: BookmarkUpdate;
       };
-      mm_daily_limits: {
+      daily_limits: {
         Row: DailyLimitRow;
         Insert: DailyLimitInsert;
         Update: DailyLimitUpdate;
@@ -64,7 +64,7 @@ export interface ProfileRow {
   major_category: MajorCategoryType;
   grade: Grade;
   dormitory: DormitoryType;
-  phone: string | null;
+  other_contact: string | null;
   kakao_id: string | null;
   chronotype: ChronotypeType | null;
   sleeping_habit: SleepingHabitType;

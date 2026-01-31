@@ -4,9 +4,7 @@ import React, { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
-  Edit3,
   MapPin,
   GraduationCap,
   Moon,
@@ -24,11 +22,37 @@ import {
   Bookmark,
   Eye,
   BookOpen,
+  UserX,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react"
-import { currentUserProfile, getLifestyleTags, getMajorCategoryLabel, getDormitoryLabel, type UserProfile } from "@/lib/types"
+import { getLifestyleTags, getMajorCategoryLabel, getDormitoryLabel, type UserProfile } from "@/lib/types"
+import { SUPPORT_KAKAO_OPEN_CHAT_URL } from "@/lib/utils/constants"
 import { ProfileDetailView } from "@/components/domain/profile/profile-detail-view"
+import { useAuth } from "@/hooks/use-auth"
+import { useProfile } from "@/hooks/use-profile"
+import { useBookmarks } from "@/hooks/use-bookmarks"
+import { useDailyLimit } from "@/hooks/use-daily-limit"
+import { useContactReveal, type RevealedContact } from "@/hooks/use-contact-reveal"
+import { useRevealedIds } from "@/hooks/use-revealed-ids"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
+import { ProfileEditForm } from "@/components/profile-edit-form"
+import { SettingsPage } from "@/components/settings-page"
+import { PrivacyPage } from "@/components/privacy-page"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
 
-type SubPage = "main" | "editProfile" | "notifications" | "settings" | "privacy" | "help" | "savedRoommates"
+type SubPage = "main" | "editProfile" | "notifications" | "settings" | "privacy" | "savedRoommates"
 
 function MenuItem({ icon, label, onClick, badge }: { icon: React.ReactNode; label: string; onClick?: () => void; badge?: number }) {
   return (
@@ -47,12 +71,15 @@ function PlaceholderPage({ title, onBack }: { title: string; onBack: () => void 
   return (
     <div className="min-h-screen pb-24 bg-background">
       <div className="max-w-2xl mx-auto lg:max-w-4xl">
-        <div className="flex items-center gap-3 px-6 pt-12 pb-4 border-b border-border/50">
-        <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-muted/50 transition-colors">
-          <ChevronLeft className="size-5 text-foreground" />
-        </button>
-        <h1 className="text-lg font-semibold text-foreground">{title}</h1>
-      </div>
+        <div className="flex items-center px-6 pt-12 pb-4 border-b border-border/50">
+          <div className="w-10 shrink-0 flex items-center">
+            <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-muted/50 transition-colors" aria-label="뒤로 가기">
+              <ChevronLeft className="size-5 text-foreground" />
+            </button>
+          </div>
+          <h1 className="flex-1 text-center text-lg font-semibold text-foreground">{title}</h1>
+          <div className="w-10 shrink-0" />
+        </div>
       <div className="flex flex-col items-center justify-center px-6 py-20">
         <div className="size-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
           <Settings className="size-8 text-muted-foreground" />
@@ -69,11 +96,14 @@ function SavedRoommatesPage({ onBack, savedProfiles, onViewProfile }: { onBack: 
   return (
     <div className="min-h-screen pb-24 bg-background">
       <div className="max-w-2xl mx-auto lg:max-w-4xl">
-        <div className="flex items-center gap-3 px-6 pt-12 pb-4 border-b border-border/50">
-          <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-muted/50 transition-colors">
-            <ChevronLeft className="size-5 text-foreground" />
-          </button>
-          <h1 className="text-lg font-semibold text-foreground">내가 찜한 룸메이트</h1>
+        <div className="flex items-center px-6 pt-12 pb-4 border-b border-border/50">
+          <div className="w-10 shrink-0 flex items-center">
+            <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-muted/50 transition-colors" aria-label="뒤로 가기">
+              <ChevronLeft className="size-5 text-foreground" />
+            </button>
+          </div>
+          <h1 className="flex-1 text-center text-lg font-semibold text-foreground">내가 찜한 룸메이트</h1>
+          <div className="w-10 shrink-0" />
         </div>
         <div className="px-6 py-4 space-y-3">
         {savedProfiles.length === 0 ? (
@@ -119,24 +149,59 @@ function SavedRoommatesPage({ onBack, savedProfiles, onViewProfile }: { onBack: 
 
 interface ProfileViewProps {
   onLogout?: () => void
-  savedProfiles?: UserProfile[]
-  onRevealContact?: (profile: UserProfile) => void
-  dailyRevealsRemaining?: number
-  isProfileRevealed?: (profileId: number | string) => boolean
 }
 
-export function ProfileView({
-  onLogout,
-  savedProfiles = [],
-  onRevealContact,
-  dailyRevealsRemaining = 3,
-  isProfileRevealed = () => false,
-}: ProfileViewProps) {
+export function ProfileView({ onLogout }: ProfileViewProps) {
+  const { user, signOut } = useAuth()
+  const { profile: profileData, loading: profileLoading, error: profileError, refetch: refetchProfile } = useProfile()
+  const { bookmarks: savedProfiles } = useBookmarks()
+  const { remaining: dailyRevealsRemaining } = useDailyLimit()
+  const { reveal: revealContact } = useContactReveal()
+  const { revealedIds, addRevealedId } = useRevealedIds()
+  const [revealedContacts, setRevealedContacts] = useState<Record<string, RevealedContact>>({})
+
   const [currentPage, setCurrentPage] = useState<SubPage>("main")
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null)
-  const profile = currentUserProfile
-  const lifestyleTags = getLifestyleTags(profile)
-  const majorCategoryLabel = getMajorCategoryLabel(profile.majorCategory)
+  const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false)
+  const [withdrawing, setWithdrawing] = useState(false)
+
+  const profile = profileData ?? null
+  const googleAvatarUrl =
+    (user?.user_metadata?.avatar_url as string | undefined) ??
+    (user?.user_metadata?.picture as string | undefined)
+  const currentUserAvatarUrl = profile?.avatarUrl ?? googleAvatarUrl ?? "/placeholder.svg"
+  const lifestyleTags = profile ? getLifestyleTags(profile) : []
+  const handleLogout = onLogout ?? signOut
+  const handleWithdrawConfirm = async () => {
+    setWithdrawing(true)
+    try {
+      const res = await fetch("/api/account/delete", { method: "POST" })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        toast.error("탈퇴에 실패했어요.", { description: (json.error as string) ?? "다시 시도해 주세요." })
+        setShowWithdrawConfirm(false)
+        return
+      }
+      setShowWithdrawConfirm(false)
+      toast.success("회원 탈퇴가 완료되었어요.")
+      signOut("/login?message=withdrawn")
+    } catch {
+      toast.error("탈퇴 처리 중 오류가 발생했어요.")
+      setShowWithdrawConfirm(false)
+    } finally {
+      setWithdrawing(false)
+    }
+  }
+  const handleRevealContact = async (p: UserProfile) => {
+    const postId = String(p.id)
+    const { success, contact } = await revealContact(postId)
+    if (success) {
+      addRevealedId(postId)
+      if (contact) setRevealedContacts((prev) => ({ ...prev, [postId]: contact }))
+    }
+  }
+  const isProfileRevealed = (profileId: number | string) => revealedIds.has(String(profileId))
+  const majorCategoryLabel = profile ? getMajorCategoryLabel(profile.majorCategory) : ""
 
   const handleBack = () => {
     setCurrentPage("main")
@@ -154,19 +219,76 @@ export function ProfileView({
             onBack={handleBackFromProfile}
             dailyRevealsRemaining={dailyRevealsRemaining}
             maxDailyReveals={3}
-            onRevealContact={onRevealContact}
+            onRevealContact={handleRevealContact}
             isRevealed={isProfileRevealed(selectedProfile.id)}
+            revealedContact={revealedContacts[String(selectedProfile.id)]}
           />
         </motion.div>
       </AnimatePresence>
     )
   }
 
-  if (currentPage === "editProfile") return <PlaceholderPage title="프로필 수정" onBack={handleBack} />
+  if (profileLoading && !profile) {
+    return (
+      <div className="min-h-screen pb-24 bg-background px-6 pt-12">
+        <div className="max-w-2xl mx-auto lg:max-w-4xl space-y-4">
+          <Skeleton className="h-24 w-24 rounded-full mx-auto bg-muted" />
+          <Skeleton className="h-6 w-32 mx-auto bg-muted" />
+          <Skeleton className="h-4 w-48 mx-auto bg-muted" />
+        </div>
+      </div>
+    )
+  }
+
+  if (profileError) {
+    return (
+      <div className="min-h-screen pb-24 bg-background flex flex-col items-center justify-center px-6 py-16">
+        <div className="max-w-2xl mx-auto flex flex-col items-center text-center">
+          <div className="size-20 rounded-full bg-destructive/10 flex items-center justify-center mb-6">
+            <AlertCircle className="size-10 text-destructive" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground mb-2">프로필을 불러올 수 없어요</h3>
+          <p className="text-sm text-muted-foreground mb-6 max-w-[320px] leading-relaxed">
+            네트워크나 일시적인 오류일 수 있어요. 아래 버튼으로 다시 시도해 보세요.
+          </p>
+          <Button onClick={() => void refetchProfile()} variant="secondary" className="rounded-full px-6" size="lg">
+            <RefreshCw className="size-4 mr-2" />
+            다시 시도
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!profileLoading && !profile) {
+    return (
+      <div className="min-h-screen pb-24 bg-background px-6 pt-12">
+        <div className="max-w-2xl mx-auto lg:max-w-4xl space-y-4">
+          <Skeleton className="h-24 w-24 rounded-full mx-auto bg-muted" />
+          <Skeleton className="h-6 w-32 mx-auto bg-muted" />
+          <Skeleton className="h-4 w-48 mx-auto bg-muted" />
+        </div>
+      </div>
+    )
+  }
+
+  if (!profile) return null
+
+  if (currentPage === "editProfile") {
+    return (
+      <ProfileEditForm
+        profile={profile}
+        onSaved={() => {
+          void refetchProfile();
+          setCurrentPage("main");
+        }}
+        onCancel={handleBack}
+      />
+    );
+  }
   if (currentPage === "notifications") return <PlaceholderPage title="알림 설정" onBack={handleBack} />
-  if (currentPage === "settings") return <PlaceholderPage title="설정" onBack={handleBack} />
-  if (currentPage === "privacy") return <PlaceholderPage title="개인정보 보호" onBack={handleBack} />
-  if (currentPage === "help") return <PlaceholderPage title="도움말 및 지원" onBack={handleBack} />
+  if (currentPage === "settings") return <SettingsPage onBack={handleBack} onOpenPrivacy={() => setCurrentPage("privacy")} onWithdrawSuccess={() => signOut("/login?message=withdrawn")} />
+  if (currentPage === "privacy") return <PrivacyPage onBack={handleBack} />
   if (currentPage === "savedRoommates") return <SavedRoommatesPage onBack={handleBack} savedProfiles={savedProfiles} onViewProfile={handleViewSavedProfile} />
 
   return (
@@ -174,18 +296,12 @@ export function ProfileView({
       <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-background px-6 pt-12 pb-6">
         <div className="max-w-2xl mx-auto lg:max-w-4xl">
         <div className="flex flex-col items-center text-center">
-          <div className="relative">
-            <Avatar className="size-24 border-4 border-card shadow-lg">
-              <AvatarImage src={profile.avatarUrl || "/placeholder.svg"} alt={profile.name} />
-              <AvatarFallback className="bg-muted text-foreground text-xl font-semibold">{profile.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <Button variant="secondary" size="icon" onClick={() => setCurrentPage("editProfile")} className="absolute -bottom-1 -right-1 size-8 rounded-full shadow-md border border-border">
-              <Edit3 className="size-3.5" />
-              <span className="sr-only">프로필 수정</span>
-            </Button>
-          </div>
+          <Avatar className="size-24 border-4 border-card shadow-lg">
+            <AvatarImage src={currentUserAvatarUrl} alt={profile.name} />
+            <AvatarFallback className="bg-muted text-foreground text-xl font-semibold">{profile.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
           <h2 className="text-lg font-bold text-foreground mt-4">{profile.name}</h2>
-          <div className="flex items-center justify-center gap-1.5 text-muted-foreground text-sm mt-1">
+          <div className="flex items-center justify-center gap-1.5 text-muted-foreground text-sm mt-3">
             <User className="size-4" />
             <span>{profile.gender === "male" ? "남성" : "여성"}</span>
           </div>
@@ -259,12 +375,12 @@ export function ProfileView({
             <h3 className="text-sm font-semibold text-foreground mb-4">연락처</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-muted-foreground">전화번호</span>
-                <span className="text-sm font-medium text-foreground">{profile.phone}</span>
-              </div>
-              <div className="flex items-center justify-between py-2">
                 <span className="text-sm text-muted-foreground">카카오톡 ID</span>
                 <span className="text-sm font-medium text-foreground">{profile.kakaoId}</span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-sm text-muted-foreground">기타 연락처</span>
+                <span className="text-sm font-medium text-foreground">{profile.otherContact || "—"}</span>
               </div>
             </div>
           </div>
@@ -290,14 +406,45 @@ export function ProfileView({
             <div className="h-px bg-border/50 mx-4" />
             <MenuItem icon={<Shield className="size-5" />} label="개인정보 보호" onClick={() => setCurrentPage("privacy")} />
             <div className="h-px bg-border/50 mx-4" />
-            <MenuItem icon={<HelpCircle className="size-5" />} label="도움말 및 지원" onClick={() => setCurrentPage("help")} />
+            <MenuItem icon={<HelpCircle className="size-5" />} label="도움말 및 지원" onClick={() => window.open(SUPPORT_KAKAO_OPEN_CHAT_URL, "_blank", "noopener,noreferrer")} />
           </div>
-          <button onClick={onLogout} className="w-full flex items-center justify-center gap-2 h-14 text-destructive hover:bg-destructive/5 rounded-2xl transition-colors border border-border/50 bg-card">
+          <button onClick={() => void handleLogout()} className="w-full flex items-center justify-center gap-2 h-14 text-destructive hover:bg-destructive/5 rounded-2xl transition-colors border border-border/50 bg-card">
             <LogOut className="size-5" />
             <span className="text-sm font-medium">로그아웃</span>
           </button>
+          <button
+            onClick={() => setShowWithdrawConfirm(true)}
+            className="w-full flex items-center justify-center gap-2 h-14 text-foreground hover:bg-muted/50 rounded-2xl transition-colors border border-border/50 bg-card mt-2"
+          >
+            <UserX className="size-5" />
+            <span className="text-sm font-medium">회원 탈퇴</span>
+          </button>
         </div>
       </main>
+
+      <AlertDialog open={showWithdrawConfirm} onOpenChange={setShowWithdrawConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>회원 탈퇴</AlertDialogTitle>
+            <AlertDialogDescription>
+              탈퇴 시 프로필, 매칭 게시글, 찜 목록, 연락처 조회 기록 등 모든 데이터가 삭제되며 복구할 수 없습니다. 정말 탈퇴하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={withdrawing}>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault()
+                void handleWithdrawConfirm()
+              }}
+              disabled={withdrawing}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {withdrawing ? "처리 중…" : "탈퇴하기"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

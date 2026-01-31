@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -38,11 +39,13 @@ export function ProfileCard({
   return (
     <Card className="overflow-hidden border-0 shadow-lg">
       <div className="relative">
-        <div className="aspect-[4/3] bg-secondary overflow-hidden">
-          <img
+        <div className="relative aspect-[4/3] bg-secondary overflow-hidden">
+          <Image
             src={imageUrl || "/placeholder.svg"}
             alt={`${name}'s profile`}
-            className="w-full h-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover"
           />
         </div>
         <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-sm font-semibold">

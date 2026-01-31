@@ -37,7 +37,7 @@ CREATE TABLE profiles (
   major_category major_category_type NOT NULL,
   grade TEXT NOT NULL CHECK (grade IN ('1학년', '2학년', '3학년', '4학년')),
   dormitory dormitory_type NOT NULL,
-  phone TEXT,
+  other_contact TEXT,
   kakao_id TEXT,
   chronotype chronotype_type,
   sleeping_habit sleeping_habit_type DEFAULT 'none',
@@ -60,6 +60,17 @@ CREATE TRIGGER update_profiles_updated_at
   BEFORE UPDATE ON profiles
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
+
+-- RLS 정책에서 profiles 자기 참조 시 무한 재귀 방지 (SECURITY DEFINER)
+CREATE OR REPLACE FUNCTION public.get_my_dormitory()
+RETURNS dormitory_type
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT dormitory FROM profiles WHERE id = auth.uid() LIMIT 1;
+$$;
 
 -- ------------------------------------------------------------
 -- 2. matching_posts
@@ -145,9 +156,15 @@ ALTER TABLE bookmarks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE daily_limits ENABLE ROW LEVEL SECURITY;
 
 -- --- profiles ---
-CREATE POLICY "Users can view own profile"
+CREATE POLICY "Users can view own profile and other profiles in same dormitory"
   ON profiles FOR SELECT
-  USING (auth.uid() = id);
+  USING (
+    auth.uid() = id
+    OR (
+      dormitory = get_my_dormitory()
+      AND id != auth.uid()
+    )
+  );
 
 CREATE POLICY "Users can update own profile"
   ON profiles FOR UPDATE
@@ -167,20 +184,32 @@ CREATE POLICY "Users can view same dormitory active posts"
   USING (
     user_id != auth.uid()
     AND is_active = TRUE
-    AND dormitory = (SELECT dormitory FROM profiles WHERE id = auth.uid())
+    AND dormitory = get_my_dormitory()
   );
 
--- --- view_logs: 본인 로그만 SELECT (INSERT는 서버/Service Role에서) ---
+-- --- view_logs: 본인 로그만 SELECT, 본인 viewer_id로만 INSERT ---
 CREATE POLICY "Users can view own view_logs"
   ON view_logs FOR SELECT
   USING (auth.uid() = viewer_id);
+
+CREATE POLICY "Users can insert own view_logs"
+  ON view_logs FOR INSERT
+  WITH CHECK (auth.uid() = viewer_id);
 
 -- --- bookmarks ---
 CREATE POLICY "Users can manage own bookmarks"
   ON bookmarks FOR ALL
   USING (auth.uid() = user_id);
 
--- --- daily_limits: 본인만 SELECT (UPDATE는 서버/Service Role에서) ---
+-- --- daily_limits: 본인만 SELECT/INSERT/UPDATE ---
 CREATE POLICY "Users can view own daily_limits"
   ON daily_limits FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own daily_limits"
+  ON daily_limits FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own daily_limits"
+  ON daily_limits FOR UPDATE
   USING (auth.uid() = user_id);

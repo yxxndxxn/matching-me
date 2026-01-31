@@ -34,7 +34,7 @@
 ### 1.3 ProfileDetailView (상세 + 연락처) 사용 필드
 
 - 위 카드 필드 전부
-- **연락처**: `phone`, `kakaoId` (마스킹 후 공개)
+- **연락처**: `otherContact`, `kakaoId` (마스킹 후 공개)
 - **라이프스타일**: `cleanliness`, `noiseSensitivity` (1~5)
 - **dailyRevealsRemaining / maxDailyReveals**: 조회권 (Phase 2, DB는 `daily_limits`)
 
@@ -46,7 +46,7 @@
 ### 1.5 온보딩 (PRD + 주석 기준, 현재 폼은 스텁)
 
 - Step 1: 이름, 성별, 소속 관, 계열, 학년
-- Step 2: 전화번호, 카카오톡 ID
+- Step 2: 기타 연락처, 카카오톡 ID
 - Step 3: 생활패턴(chronotype), 잠버릇(sleepingHabit), 흡연(smoking), 청결도(cleanliness), 소음민감도(noiseSensitivity), 자기소개(introduction)
 
 ### 1.6 API/쿼리 (현재 스텁이지만 설계 반영)
@@ -58,7 +58,7 @@
 ### 1.7 UI 기준 필드 요약 (스키마에 반영할 항목)
 
 - **프로필(표시/필터/온보딩)**:  
-  `name`, `gender`, `major_category`, `grade`, `dormitory`, `phone`, `kakao_id`,  
+  `name`, `gender`, `major_category`, `grade`, `dormitory`, `other_contact`, `kakao_id`,  
   `chronotype`, `sleeping_habit`, `smoking`, `cleanliness`, `noise_sensitivity`, `introduction`, `avatar_url`
 - **매칭 게시글**:  
   `dormitory`(격리), `ai_summary`, `match_score`, `is_active`
@@ -92,7 +92,7 @@
 
 - **id**: UUID PK, `REFERENCES auth.users(id) ON DELETE CASCADE`
 - **name**, **gender** (enum), **major_category** (enum), **grade** (text, 1~4학년), **dormitory** (enum)
-- **phone**, **kakao_id** (nullable)
+- **other_contact**, **kakao_id** (nullable)
 - **chronotype** (enum), **sleeping_habit** (enum), **smoking** (boolean)
 - **cleanliness**, **noise_sensitivity** (integer 1~5, nullable)
 - **introduction** (text, 500자 제한), **avatar_url** (nullable)

@@ -27,7 +27,7 @@ export interface FeedItem {
   majorCategory: ProfileRow["major_category"];
   grade: ProfileRow["grade"];
   dormitory: ProfileRow["dormitory"];
-  phone: string;
+  otherContact: string;
   kakaoId: string;
   chronotype: NonNullable<ProfileRow["chronotype"]>;
   sleepingHabit: ProfileRow["sleeping_habit"];
@@ -58,7 +58,7 @@ export function rowToFeedItem(
     majorCategory: profile.major_category,
     grade: profile.grade,
     dormitory: post.dormitory,
-    phone: profile.phone ?? "",
+    otherContact: profile.other_contact ?? "",
     kakaoId: profile.kakao_id ?? "",
     chronotype: profile.chronotype ?? "morning",
     sleepingHabit: profile.sleeping_habit,

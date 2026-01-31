@@ -23,7 +23,7 @@ sequenceDiagram
     Note over Onboarding: Step 1: 기본 정보
     User->>Onboarding: 이름, 성별, 계열, 학년, 소속관 입력
     Note over Onboarding: Step 2: 연락처
-    User->>Onboarding: 전화번호, 카카오톡 ID 입력
+    User->>Onboarding: 기타 연락처, 카카오톡 ID 입력
     Note over Onboarding: Step 3: 라이프스타일
     User->>Onboarding: 생활패턴, 잠버릇, 흡연여부,<br/>청결도, 소음민감도, 자기소개 입력
 
@@ -59,7 +59,7 @@ sequenceDiagram
     alt 조회권 남아있음 (dailyRevealsRemaining > 0)
         Detail->>DB: 연락처 조회 로그 저장
         Detail->>Detail: 조회권 차감 (3 → 2)
-        Detail->>User: 전화번호, 카카오톡 ID 공개
+        Detail->>User: 기타 연락처, 카카오톡 ID 공개
     else 조회권 소진
         Detail->>User: "오늘의 조회 한도를 초과했습니다" 알림
     end
@@ -91,7 +91,7 @@ flowchart TD
     ProfileCheck -->|완료| MainApp[메인 앱<br/>page.tsx]
 
     Onboarding --> OnboardingStep1[Step 1: 기본 정보<br/>이름, 성별, 계열, 학년, 소속관]
-    OnboardingStep1 --> OnboardingStep2[Step 2: 연락처<br/>전화번호, 카카오톡 ID]
+    OnboardingStep1 --> OnboardingStep2[Step 2: 연락처<br/>기타 연락처, 카카오톡 ID]
     OnboardingStep2 --> OnboardingStep3[Step 3: 라이프스타일<br/>생활패턴, 잠버릇, 흡연여부,<br/>청결도, 소음민감도, 자기소개]
     OnboardingStep3 --> SaveProfile[(Supabase DB<br/>프로필 저장)]
     SaveProfile --> MainApp
@@ -124,7 +124,7 @@ flowchart TD
     ContactReveal -->|예| CheckLimit{조회권<br/>남았나?<br/>N/3}
     ContactReveal -->|아니오| BackToFeed[피드로 돌아가기]
 
-    CheckLimit -->|예| RevealContact[연락처 공개<br/>- 전화번호<br/>- 카카오톡 ID]
+    CheckLimit -->|예| RevealContact[연락처 공개<br/>- 기타 연락처<br/>- 카카오톡 ID]
     CheckLimit -->|아니오| ShowError[조회 한도 초과<br/>알림 표시]
 
     RevealContact --> DecrementLimit[(조회권 차감<br/>로그 저장)]
@@ -187,7 +187,7 @@ erDiagram
         enum major_category "계열 (engineering/humanities/social/natural/arts/education)"
         string grade "학년 (1학년~4학년)"
         enum dormitory "소속관 (dongjak/eunpyeong)"
-        string phone "전화번호 (010-XXXX-XXXX)"
+        string other_contact "기타 연락처"
         string kakao_id "카카오톡 ID"
         enum chronotype "생활패턴 (morning/night)"
         enum sleeping_habit "잠버릇 (none/grinding/snoring)"

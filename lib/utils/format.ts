@@ -3,7 +3,3 @@
 export function formatDate() {
   return null;
 }
-
-export function formatPhoneNumber() {
-  return null;
-}

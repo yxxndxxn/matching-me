@@ -16,7 +16,7 @@ export interface ProfileUI {
   majorCategory: Profile["major_category"];
   grade: Profile["grade"];
   dormitory: Profile["dormitory"];
-  phone: string;
+  otherContact: string;
   kakaoId: string;
   chronotype: NonNullable<Profile["chronotype"]>;
   sleepingHabit: Profile["sleeping_habit"];
@@ -37,7 +37,7 @@ export function profileRowToUI(row: ProfileRow): ProfileUI {
     majorCategory: row.major_category,
     grade: row.grade,
     dormitory: row.dormitory,
-    phone: row.phone ?? "",
+    otherContact: row.other_contact ?? "",
     kakaoId: row.kakao_id ?? "",
     chronotype: row.chronotype ?? "morning",
     sleepingHabit: row.sleeping_habit,

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ArrowLeft,
-  Phone,
+  Link2,
   Copy,
   MessageCircle,
   MapPin,
@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { cn } from "@/lib/utils/cn"
 import { toast } from "sonner"
+import type { RevealedContact } from "@/hooks/use-contact-reveal"
 import type { UserProfile } from "@/lib/types"
 import { getLifestyleTags, getMajorCategoryLabel, getDormitoryLabel } from "@/lib/types"
 
@@ -41,6 +42,7 @@ interface ProfileDetailViewProps {
   maxDailyReveals?: number
   onRevealContact?: (profile: UserProfile) => void
   isRevealed?: boolean
+  revealedContact?: RevealedContact
 }
 
 function CircularProgress({ value, size = 64 }: { value: number; size?: number }) {
@@ -86,19 +88,17 @@ export function ProfileDetailView({
   maxDailyReveals = 3,
   onRevealContact,
   isRevealed = false,
+  revealedContact,
 }: ProfileDetailViewProps) {
   const [contactRevealed, setContactRevealed] = useState(isRevealed)
+  const displayContact = revealedContact ?? { otherContact: profile.otherContact ?? "", kakaoId: profile.kakaoId ?? "" }
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const lifestyleTags = getLifestyleTags(profile)
   const majorCategoryLabel = getMajorCategoryLabel(profile.majorCategory)
 
   const getInitials = (name: string) => name.slice(0, 2).toUpperCase()
-  const maskPhone = (phoneNumber: string) => {
-    const parts = phoneNumber.split("-")
-    if (parts.length === 3) return `${parts[0]}-****-${parts[2]}`
-    return phoneNumber.slice(0, 3) + "****" + phoneNumber.slice(-4)
-  }
   const maskKakaoId = (id: string) => (id.length <= 4 ? "****" : id.slice(0, 2) + "****" + id.slice(-2))
+  const maskOtherContact = (value: string) => (value.length <= 4 ? "****" : value.slice(0, 2) + "****" + value.slice(-2))
 
   const handleRevealClick = () => {
     if (dailyRevealsRemaining === 0) {
@@ -119,17 +119,25 @@ export function ProfileDetailView({
     setTimeout(() => setContactRevealed(false), 2000)
   }
 
+  const showContactCard = contactRevealed
+  const showFirstTimeRevealButton = !isRevealed && !contactRevealed
+  const showLoadContactButton = isRevealed && !contactRevealed
+
+  const handleLoadContactClick = () => setContactRevealed(true)
+
   return (
     <div className="min-h-screen bg-background pb-32">
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
         <div className="w-full px-6">
           <div className="max-w-2xl mx-auto lg:max-w-4xl">
-          <div className="flex items-center gap-3 h-14">
-            <button onClick={onBack} className="flex items-center justify-center size-10 -ml-2 rounded-full hover:bg-secondary transition-colors">
-              <ArrowLeft className="size-5 text-foreground" />
-              <span className="sr-only">뒤로 가기</span>
-            </button>
-            <h1 className="font-semibold text-foreground">프로필</h1>
+          <div className="flex items-center h-14">
+            <div className="w-10 shrink-0 flex items-center">
+              <button onClick={onBack} className="flex items-center justify-center size-10 -ml-2 rounded-full hover:bg-secondary transition-colors" aria-label="뒤로 가기">
+                <ArrowLeft className="size-5 text-foreground" />
+              </button>
+            </div>
+            <h1 className="flex-1 text-center font-semibold text-foreground">프로필</h1>
+            <div className="w-10 shrink-0" />
           </div>
           </div>
         </div>
@@ -226,7 +234,43 @@ export function ProfileDetailView({
       <div className="fixed bottom-0 left-0 right-0 lg:left-64 z-[60] bg-background/95 backdrop-blur-lg border-t border-border/50">
         <div className="max-w-2xl mx-auto lg:max-w-4xl px-6">
           <AnimatePresence mode="wait">
-            {!contactRevealed ? (
+            {showContactCard ? (
+              <motion.div key="contact-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="py-4">
+                <div className="bg-card rounded-2xl border border-indigo-500/20 p-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center size-11 rounded-full bg-amber-500/10">
+                        <MessageCircle className="size-5 text-amber-500" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">카카오톡 ID</p>
+                        <p className="text-sm font-medium text-foreground font-mono tracking-wide">{revealedContact ? displayContact.kakaoId : maskKakaoId(displayContact.kakaoId)}</p>
+                      </div>
+                    </div>
+                    <Button variant="default" size="sm" onClick={() => handleCopy(displayContact.kakaoId, "카카오톡 ID")} className="h-10 px-4 rounded-xl text-xs font-semibold gap-2 bg-indigo-500 hover:bg-indigo-600">
+                      <Copy className="size-4" /> 복사
+                    </Button>
+                  </div>
+                  {displayContact.otherContact ? (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center size-11 rounded-full bg-indigo-500/10">
+                          <Link2 className="size-5 text-indigo-500" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">기타 연락처</p>
+                          <p className="text-sm font-medium text-foreground font-mono tracking-wide">{revealedContact ? displayContact.otherContact : maskOtherContact(displayContact.otherContact)}</p>
+                        </div>
+                      </div>
+                      <Button variant="default" size="sm" onClick={() => handleCopy(displayContact.otherContact, "기타 연락처")} className="h-10 px-4 rounded-xl text-xs font-semibold gap-2 bg-indigo-500 hover:bg-indigo-600">
+                        <Copy className="size-4" /> 복사
+                      </Button>
+                    </div>
+                  ) : null}
+                  <p className="text-center text-xs text-muted-foreground pt-3 border-t border-border/30">연락 시 예의를 갖춰 주세요!</p>
+                </div>
+              </motion.div>
+            ) : showFirstTimeRevealButton ? (
               <motion.div key="reveal-button" initial={{ opacity: 1 }} exit={{ opacity: 0, y: 20 }} className="py-4">
                 <Button
                   onClick={handleRevealClick}
@@ -240,41 +284,19 @@ export function ProfileDetailView({
                   오늘 남은 연락처 공개: {dailyRevealsRemaining}/{maxDailyReveals}
                 </p>
               </motion.div>
-            ) : (
-              <motion.div key="contact-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="py-4">
-                <div className="bg-card rounded-2xl border border-indigo-500/20 p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center size-11 rounded-full bg-indigo-500/10">
-                        <Phone className="size-5 text-indigo-500" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">전화번호</p>
-                        <p className="text-sm font-medium text-foreground font-mono tracking-wide">{maskPhone(profile.phone)}</p>
-                      </div>
-                    </div>
-                    <Button variant="default" size="sm" onClick={() => handleCopy(profile.phone, "전화번호")} className="h-10 px-4 rounded-xl text-xs font-semibold gap-2 bg-indigo-500 hover:bg-indigo-600">
-                      <Copy className="size-4" /> 복사
-                    </Button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center size-11 rounded-full bg-amber-500/10">
-                        <MessageCircle className="size-5 text-amber-500" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">카카오톡 ID</p>
-                        <p className="text-sm font-medium text-foreground font-mono tracking-wide">{maskKakaoId(profile.kakaoId)}</p>
-                      </div>
-                    </div>
-                    <Button variant="default" size="sm" onClick={() => handleCopy(profile.kakaoId, "카카오톡 ID")} className="h-10 px-4 rounded-xl text-xs font-semibold gap-2 bg-indigo-500 hover:bg-indigo-600">
-                      <Copy className="size-4" /> 복사
-                    </Button>
-                  </div>
-                  <p className="text-center text-xs text-muted-foreground pt-3 border-t border-border/30">연락 시 예의를 갖춰 주세요!</p>
-                </div>
+            ) : showLoadContactButton ? (
+              <motion.div key="load-contact-button" initial={{ opacity: 1 }} exit={{ opacity: 0, y: 20 }} className="py-4">
+                <Button
+                  onClick={handleLoadContactClick}
+                  variant="secondary"
+                  className="w-full h-14 rounded-2xl text-base font-semibold gap-2"
+                >
+                  <Eye className="size-5" />
+                  연락처 보기
+                </Button>
+                <p className="text-center text-xs text-muted-foreground mt-2">이미 확인한 연락처예요. 다시 불러올 수 있어요.</p>
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
         </div>
       </div>

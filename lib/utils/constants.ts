@@ -20,3 +20,6 @@ export const MAJOR_CATEGORY = {
 } as const;
 
 export const DAILY_REVEAL_LIMIT = 3;
+
+/** 도움말 및 지원: 카카오톡 오픈채팅방 */
+export const SUPPORT_KAKAO_OPEN_CHAT_URL = "https://open.kakao.com/o/sKaByhei";

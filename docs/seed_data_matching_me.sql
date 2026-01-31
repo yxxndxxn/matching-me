@@ -29,19 +29,19 @@
 -- id = auth.users(id). gender_type: male|female, grade: 1학년~4학년, dormitory_type: dongjak|eunpyeong
 
 INSERT INTO profiles (
-  id, name, gender, major_category, grade, dormitory, phone, kakao_id,
+  id, name, gender, major_category, grade, dormitory, other_contact, kakao_id,
   chronotype, sleeping_habit, smoking, cleanliness, noise_sensitivity, introduction, created_at, updated_at
 ) VALUES
-  ('a0000001-0001-4000-8000-000000000001', '김서연', 'female', 'humanities', '2학년', 'dongjak', '010-2345-6781', 'kim_seoyeon', 'morning', 'none', false, 4, 3, '아침형이라 새벽에 조용히 공부하는 편이에요. 깔끔한 방 선호해요!', NOW() - (random() * INTERVAL '7 days'), NOW()),
-  ('a0000002-0002-4000-8000-000000000002', '박지훈', 'male', 'engineering', '3학년', 'eunpyeong', '010-2345-6782', 'park_jh', 'night', 'none', false, 3, 4, '밤에 코딩할 때가 많아서 새벽까지 불 켜둘 수 있으면 좋겠어요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
-  ('a0000003-0003-4000-8000-000000000003', '이민지', 'female', 'social', '1학년', 'dongjak', '010-2345-6783', 'lee_minji', 'morning', 'none', false, 5, 2, '청결도는 최고로 맞추고 싶어요. 주말엔 친구들이랑 놀러 다녀요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
-  ('a0000004-0004-4000-8000-000000000004', '최도윤', 'male', 'natural', '4학년', 'eunpyeong', '010-2345-6784', 'choi_dy', 'morning', 'grinding', false, 3, 5, '이갈이 있어서 미리 말씀드려요. 귀마개 있으시면 좋겠어요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
-  ('a0000005-0005-4000-8000-000000000005', '정하은', 'female', 'arts', '2학년', 'dongjak', '010-2345-6785', 'jung_haeun', 'night', 'none', false, 4, 3, '예체능이라 밤에 작업할 때가 많아요. 서로 존중하면서 지내요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
-  ('a0000006-0006-4000-8000-000000000006', '강태민', 'male', 'engineering', '1학년', 'dongjak', '010-2345-6786', 'kang_taemin', 'night', 'none', false, 2, 3, '게임 가끔 해요. 밤에 헤드셋 쓰고 할게요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
-  ('a0000007-0007-4000-8000-000000000007', '윤서진', 'female', 'education', '3학년', 'eunpyeong', '010-2345-6787', 'yoon_sj', 'morning', 'snoring', false, 4, 4, '코를 살짝 곤다는데, 칸막이 있으면 좋을 것 같아요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
-  ('a0000008-0008-4000-8000-000000000008', '임준혁', 'male', 'social', '2학년', 'eunpyeong', '010-2345-6788', 'lim_jh', 'morning', 'none', false, 3, 2, '아침에 일어나서 조용히 책 읽는 걸 좋아해요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
-  ('a0000009-0009-4000-8000-000000000009', '송유나', 'female', 'humanities', '4학년', 'dongjak', '010-2345-6789', 'song_yna', 'night', 'none', false, 5, 5, '소음에 예민한 편이라 조용한 분이면 좋겠어요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
-  ('a000000a-000a-4000-8000-00000000000a', '한지우', 'male', 'natural', '1학년', 'dongjak', '010-2345-6790', 'han_jiwoo', 'night', 'none', false, 3, 3, '주말에 운동하고 야식 자주 먹어요. 같이 먹을 분 환영해요.', NOW() - (random() * INTERVAL '7 days'), NOW())
+  ('a0000001-0001-4000-8000-000000000001', '김서연', 'female', 'humanities', '2학년', 'dongjak', NULL, 'kim_seoyeon', 'morning', 'none', false, 4, 3, '아침형이라 새벽에 조용히 공부하는 편이에요. 깔끔한 방 선호해요!', NOW() - (random() * INTERVAL '7 days'), NOW()),
+  ('a0000002-0002-4000-8000-000000000002', '박지훈', 'male', 'engineering', '3학년', 'eunpyeong', NULL, 'park_jh', 'night', 'none', false, 3, 4, '밤에 코딩할 때가 많아서 새벽까지 불 켜둘 수 있으면 좋겠어요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
+  ('a0000003-0003-4000-8000-000000000003', '이민지', 'female', 'social', '1학년', 'dongjak', NULL, 'lee_minji', 'morning', 'none', false, 5, 2, '청결도는 최고로 맞추고 싶어요. 주말엔 친구들이랑 놀러 다녀요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
+  ('a0000004-0004-4000-8000-000000000004', '최도윤', 'male', 'natural', '4학년', 'eunpyeong', NULL, 'choi_dy', 'morning', 'grinding', false, 3, 5, '이갈이 있어서 미리 말씀드려요. 귀마개 있으시면 좋겠어요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
+  ('a0000005-0005-4000-8000-000000000005', '정하은', 'female', 'arts', '2학년', 'dongjak', NULL, 'jung_haeun', 'night', 'none', false, 4, 3, '예체능이라 밤에 작업할 때가 많아요. 서로 존중하면서 지내요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
+  ('a0000006-0006-4000-8000-000000000006', '강태민', 'male', 'engineering', '1학년', 'dongjak', NULL, 'kang_taemin', 'night', 'none', false, 2, 3, '게임 가끔 해요. 밤에 헤드셋 쓰고 할게요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
+  ('a0000007-0007-4000-8000-000000000007', '윤서진', 'female', 'education', '3학년', 'eunpyeong', NULL, 'yoon_sj', 'morning', 'snoring', false, 4, 4, '코를 살짝 곤다는데, 칸막이 있으면 좋을 것 같아요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
+  ('a0000008-0008-4000-8000-000000000008', '임준혁', 'male', 'social', '2학년', 'eunpyeong', NULL, 'lim_jh', 'morning', 'none', false, 3, 2, '아침에 일어나서 조용히 책 읽는 걸 좋아해요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
+  ('a0000009-0009-4000-8000-000000000009', '송유나', 'female', 'humanities', '4학년', 'dongjak', NULL, 'song_yna', 'night', 'none', false, 5, 5, '소음에 예민한 편이라 조용한 분이면 좋겠어요.', NOW() - (random() * INTERVAL '7 days'), NOW()),
+  ('a000000a-000a-4000-8000-00000000000a', '한지우', 'male', 'natural', '1학년', 'dongjak', NULL, 'han_jiwoo', 'night', 'none', false, 3, 3, '주말에 운동하고 야식 자주 먹어요. 같이 먹을 분 환영해요.', NOW() - (random() * INTERVAL '7 days'), NOW())
 ON CONFLICT (id) DO NOTHING;
 
 -- -----------------------------------------------------
@@ -146,7 +146,7 @@ SELECT gender, COUNT(*) AS user_count FROM profiles GROUP BY gender;
 -- Schema Compliance (docs/supabase-schema.sql 기준 재점검)
 -- =====================================================
 -- [x] profiles: id(FK auth.users), name, gender(gender_type), major_category(major_category_type),
---     grade(TEXT '1학년'~'4학년'), dormitory(dormitory_type), phone, kakao_id, chronotype, sleeping_habit,
+--     grade(TEXT '1학년'~'4학년'), dormitory(dormitory_type), other_contact, kakao_id, chronotype, sleeping_habit,
 --     smoking, cleanliness(1-5), noise_sensitivity(1-5), introduction(≤500), created_at, updated_at
 -- [x] matching_posts: id, user_id(FK auth.users), dormitory, ai_summary, match_score(INTEGER 0-100), is_active, created_at, updated_at
 -- [x] view_logs: id, viewer_id(FK auth.users), viewed_post_id(FK matching_posts), contact_revealed, viewed_at
