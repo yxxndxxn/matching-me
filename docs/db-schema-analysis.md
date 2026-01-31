@@ -184,4 +184,20 @@
 
 ---
 
+## 7. 시드 데이터 (Seed Data)
+
+스키마 5개 테이블 모두에 대한 시드 데이터는 [`docs/seed_data_matching_me.sql`](./seed_data_matching_me.sql)에서 관리합니다.
+
+| 테이블 | 시드 포함 | 비고 |
+|--------|-----------|------|
+| profiles | ✅ 10명 | auth.users id와 1:1 |
+| matching_posts | ✅ 10건 | 사용자당 1건 활성 |
+| view_logs | ✅ 7건 | 연락처 조회 로그 샘플 |
+| bookmarks | ✅ 18건 | 동성만 관심 표시 |
+| daily_limits | ✅ 70건 | 10명×7일 (Optional) |
+
+실행 순서: `supabase-schema.sql` 적용 → auth 사용자 10명 생성 → `seed_data_matching_me.sql` 실행.
+
+---
+
 **다음 단계**: 위 **6. 실행 단계**에 대한 승인을 주시면, 1→2→3 순서로 실제 SQL 파일 작성, `db-schema.md` 수정, `types/` 및 `lib/types.ts` 수정까지 진행하겠습니다.

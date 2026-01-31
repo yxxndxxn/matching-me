@@ -5,6 +5,7 @@
 매칭미? (Matching Me?) 프로젝트의 PostgreSQL 데이터베이스 스키마 설계 문서입니다. Supabase를 기반으로 구축되며, **인증은 `auth.users`(Supabase Auth)** 를 사용하고 별도 `users` 테이블은 두지 않습니다. Row Level Security (RLS) 정책을 통한 데이터 보안을 강조합니다.
 
 - **적용용 SQL**: Supabase SQL Editor에서 바로 실행하려면 [`docs/supabase-schema.sql`](./supabase-schema.sql) 사용
+- **이미 적용된 DB에 변경분만 반영**: [`docs/supabase-update-guide.md`](./supabase-update-guide.md) 참고
 
 ---
 
@@ -110,7 +111,8 @@ CREATE TABLE view_logs (
 CREATE INDEX idx_view_logs_viewer_id ON view_logs(viewer_id);
 CREATE INDEX idx_view_logs_viewed_post_id ON view_logs(viewed_post_id);
 CREATE INDEX idx_view_logs_viewed_at ON view_logs(viewed_at DESC);
-CREATE INDEX idx_view_logs_viewer_date ON view_logs(viewer_id, (viewed_at::date));
+-- 인덱스 표현식은 IMMUTABLE 필요: timestamptz→date 시 UTC 기준 사용
+CREATE INDEX idx_view_logs_viewer_date ON view_logs(viewer_id, ((viewed_at AT TIME ZONE 'UTC')::date));
 ```
 
 **RLS 정책**:
@@ -297,6 +299,22 @@ ORDER BY b.created_at DESC;
 
 ---
 
+## 🌱 시드 데이터 (Seed Data)
+
+테스트용 샘플 데이터는 [`docs/seed_data_matching_me.sql`](./seed_data_matching_me.sql)에서 관리합니다.
+
+| 테이블 | 시드 포함 | 비고 |
+|--------|-----------|------|
+| **profiles** | ✅ 10명 | auth.users id와 1:1 (실행 전 auth 사용자 10명 필요) |
+| **matching_posts** | ✅ 10건 | 사용자당 1건 활성 게시글 |
+| **view_logs** | ✅ 7건 | 연락처 조회 로그 샘플 (Optional) |
+| **bookmarks** | ✅ 18건 | 동성만 관심 표시 |
+| **daily_limits** | ✅ 70건 | 10명×7일 (Optional, service role 권장) |
+
+실행 순서: 스키마 적용 후 → auth 사용자 생성 → 시드 SQL 실행. 상세는 시드 파일 상단 주석 참고.
+
+---
+
 ## 🔍 성능 최적화
 
 - 자주 조회되는 컬럼 인덱스: `dormitory`, `is_active`, `match_score`
@@ -315,5 +333,5 @@ ORDER BY b.created_at DESC;
 ---
 
 **작성일**: 2026-01-29  
-**수정일**: 2026-01-30 (auth.users 기준으로 정리, users 테이블 제거)  
-**버전**: 1.1.0
+**수정일**: 2026-01-31 (view_logs 인덱스 IMMUTABLE 반영, 시드 데이터 섹션 추가)  
+**버전**: 1.2.0

@@ -133,15 +133,17 @@ matching-me/
 
 ## 📊 데이터 모델
 
+인증은 Supabase Auth(`auth.users`) 사용, 별도 `users` 테이블 없음.
+
 주요 테이블:
-- `users` - 사용자 인증 정보
-- `profiles` - 사용자 프로필 정보
+- `profiles` - 사용자 프로필 (id = auth.uid())
 - `matching_posts` - 매칭 게시글 및 AI 요약
 - `view_logs` - 연락처 조회 로그 (Phase 2)
 - `bookmarks` - 찜하기 목록 (Phase 2)
 - `daily_limits` - 일일 조회권 관리 (Phase 2)
 
-자세한 데이터 모델은 [FLOW.md](./docs/FLOW.md)를 참고하세요.
+- 스키마/RLS: [docs/db-schema.md](./docs/db-schema.md), [docs/supabase-schema.sql](./docs/supabase-schema.sql)  
+- 시드 데이터: [docs/seed_data_matching_me.sql](./docs/seed_data_matching_me.sql) (5개 테이블 샘플)
 
 ## 🔄 사용자 플로우
 

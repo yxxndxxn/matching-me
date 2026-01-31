@@ -100,7 +100,8 @@ CREATE TABLE view_logs (
 CREATE INDEX idx_view_logs_viewer_id ON view_logs(viewer_id);
 CREATE INDEX idx_view_logs_viewed_post_id ON view_logs(viewed_post_id);
 CREATE INDEX idx_view_logs_viewed_at ON view_logs(viewed_at DESC);
-CREATE INDEX idx_view_logs_viewer_date ON view_logs(viewer_id, (viewed_at::date));
+-- timestamptz::date 는 세션 타임존에 따라 달라져 인덱스에서 허용되지 않음 → UTC 기준 날짜로 고정
+CREATE INDEX idx_view_logs_viewer_date ON view_logs(viewer_id, ((viewed_at AT TIME ZONE 'UTC')::date));
 
 -- ------------------------------------------------------------
 -- 4. bookmarks (Phase 2 - 찜하기)
