@@ -51,7 +51,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/login") ||
     request.nextUrl.pathname === "/";
   const isProtectedRoute =
-    request.nextUrl.pathname.startsWith("/feed") ||
+    request.nextUrl.pathname.startsWith("/dashboard") ||
     request.nextUrl.pathname.startsWith("/profile") ||
     request.nextUrl.pathname.startsWith("/onboarding");
 
@@ -63,11 +63,11 @@ export async function updateSession(request: NextRequest) {
 
   if (request.nextUrl.pathname === "/") {
     if (!user) return NextResponse.redirect(new URL("/login", request.url));
-    return NextResponse.redirect(new URL("/feed", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   if (isAuthRoute && user && request.nextUrl.pathname === "/login") {
-    return NextResponse.redirect(new URL("/feed", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   // 이미 프로필이 있으면 온보딩 화면 대신 대시보드로
@@ -78,7 +78,7 @@ export async function updateSession(request: NextRequest) {
       .eq("id", user.id)
       .maybeSingle();
     if (data != null) {
-      return NextResponse.redirect(new URL("/feed", request.url));
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 

@@ -14,7 +14,7 @@ export function EmptyState({ onUpdatePreferences }: EmptyStateProps) {
         <SearchX className="size-10 text-muted-foreground" />
       </div>
       <h3 className="text-lg font-semibold text-foreground mb-3">
-        나와 꼭 맞는 메이트를 찾기 위해 매칭미가 준비 중이에요! ✨
+        나와 꼭 맞는 메이트를 찾기 위해 매칭미?가 준비 중이에요! ✨
       </h3>
       <div className="space-y-2 mb-6 max-w-[340px] text-center">
         <p className="text-sm text-muted-foreground leading-relaxed">

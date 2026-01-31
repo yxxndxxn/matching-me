@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Search, User } from "lucide-react"
+import { Search, User, Info } from "lucide-react"
 
 import { cn } from "@/lib/utils/cn"
 import { useAuth } from "@/hooks/use-auth"
@@ -18,7 +18,7 @@ export function Sidebar({ dailyRevealsRemaining: _propRemaining }: SidebarProps)
   const pathname = usePathname()
   const { user } = useAuth()
   const { remaining: dailyRevealsRemaining } = useDailyLimit()
-  const isHome = pathname === "/feed" || pathname === "/" || pathname.startsWith("/feed/")
+  const isHome = pathname === "/dashboard" || pathname === "/" || pathname.startsWith("/dashboard/")
   const isProfile = pathname.startsWith("/profile")
   const sidebarAvatarUrl =
     (user?.user_metadata?.avatar_url as string | undefined) ??
@@ -27,17 +27,17 @@ export function Sidebar({ dailyRevealsRemaining: _propRemaining }: SidebarProps)
   return (
     <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 bg-card border-r border-border flex-col z-40">
       <Link
-        href="/feed"
+        href="/dashboard"
         className="w-full p-6 border-b border-border text-left hover:bg-muted/30 transition-colors"
       >
         <h1 className="text-xl font-bold text-primary">매칭미?</h1>
         <p className="text-xs text-muted-foreground mt-1">
-          나와 맞는 룸메이트를 찾아보세요
+          남도학숙생을 위한 룸메이트 매칭 플랫폼
         </p>
       </Link>
       <nav className="flex-1 p-4 space-y-1">
         <Link
-          href="/feed"
+          href="/dashboard"
           className={cn(
             "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors",
             isHome
@@ -59,6 +59,18 @@ export function Sidebar({ dailyRevealsRemaining: _propRemaining }: SidebarProps)
         >
           <User className="size-5 shrink-0" />
           마이페이지
+        </Link>
+        <Link
+          href="/about"
+          className={cn(
+            "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors",
+            pathname === "/about"
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          )}
+        >
+          <Info className="size-5 shrink-0" />
+          서비스 소개
         </Link>
       </nav>
       <div className="p-4 border-t border-border">

@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const PROTECTED_PATHS = ["/feed", "/profile"];
+const PROTECTED_PATHS = ["/dashboard", "/profile"];
 
 export function RedirectToOnboarding({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();

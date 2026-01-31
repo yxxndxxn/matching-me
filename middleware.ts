@@ -1,4 +1,4 @@
-// 루트 미들웨어: 세션 갱신 + 보호 경로(/feed, /profile, /onboarding) 미로그인 시 /login 리다이렉트
+// 루트 미들웨어: 세션 갱신 + 보호 경로(/dashboard, /profile, /onboarding) 미로그인 시 /login 리다이렉트
 
 import { updateSession } from "@/lib/supabase/middleware";
 import { type NextRequest } from "next/server";

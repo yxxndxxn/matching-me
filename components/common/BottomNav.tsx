@@ -7,7 +7,7 @@ import { Search, User } from "lucide-react"
 import { cn } from "@/lib/utils/cn"
 
 const navItems = [
-  { id: "home" as const, label: "룸메찾기", href: "/feed", icon: Search },
+  { id: "home" as const, label: "룸메찾기", href: "/dashboard", icon: Search },
   { id: "profile" as const, label: "마이페이지", href: "/profile", icon: User },
 ] as const
 
@@ -20,8 +20,8 @@ export function BottomNav() {
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive =
-            item.href === "/feed"
-              ? pathname === "/feed" || pathname === "/" || pathname.startsWith("/feed/")
+            item.href === "/dashboard"
+              ? pathname === "/dashboard" || pathname === "/" || pathname.startsWith("/dashboard/")
               : pathname.startsWith(item.href)
           return (
             <Link

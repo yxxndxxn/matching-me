@@ -1,6 +1,6 @@
 "use client";
 
-// 온보딩 메인: 3단계 완료 시 createProfile + createMatchingPost → /feed (Phase 2.2, 2.3 / Phase 3.6 저장 실패 toast)
+// 온보딩 메인: 3단계 완료 시 createProfile + createMatchingPost → /dashboard (Phase 2.2, 2.3 / Phase 3.6 저장 실패 toast)
 
 import { Onboarding, type OnboardingFormData } from "@/components/onboarding";
 import { createClient } from "@/lib/supabase/client";
@@ -20,7 +20,7 @@ export default function OnboardingPage() {
     if (!user) return;
     const supabase = createClient();
     void hasProfile(supabase, user.id).then(({ exists }) => {
-      if (exists) router.replace("/feed");
+      if (exists) router.replace("/dashboard");
       else setReady(true);
     });
   }, [user, router]);
@@ -32,7 +32,7 @@ export default function OnboardingPage() {
     // 이미 프로필이 있으면 대시보드로 (중복 제출·새로고침 시 409 방지)
     const { exists: alreadyHasProfile } = await hasProfile(supabase, user.id);
     if (alreadyHasProfile) {
-      router.replace("/feed");
+      router.replace("/dashboard");
       router.refresh();
       return;
     }
@@ -69,7 +69,7 @@ export default function OnboardingPage() {
         profileError.message?.toLowerCase().includes("unique");
       if (isConflict) {
         toast.info("이미 프로필이 등록되어 있어요. 대시보드로 이동합니다.");
-        router.replace("/feed");
+        router.replace("/dashboard");
         router.refresh();
         return;
       }
@@ -93,7 +93,7 @@ export default function OnboardingPage() {
         postError.message?.toLowerCase().includes("duplicate") ||
         postError.message?.toLowerCase().includes("unique");
       if (isConflict) {
-        router.replace("/feed");
+        router.replace("/dashboard");
         router.refresh();
         return;
       }
@@ -103,7 +103,7 @@ export default function OnboardingPage() {
       return;
     }
 
-    router.replace("/feed");
+    router.replace("/dashboard");
     router.refresh();
   }
 

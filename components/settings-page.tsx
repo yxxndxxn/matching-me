@@ -1,7 +1,8 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
-import { ChevronLeft, HelpCircle, Shield, Info, UserX } from "lucide-react"
+import { ChevronLeft, HelpCircle, Shield, Info, UserX, BookOpen } from "lucide-react"
 import { SUPPORT_KAKAO_OPEN_CHAT_URL } from "@/lib/utils/constants"
 import {
   AlertDialog,
@@ -70,7 +71,20 @@ export function SettingsPage({ onBack, onOpenPrivacy, onWithdrawSuccess }: Setti
             <div className="px-4 py-3 border-b border-border/50">
               <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">앱 정보</h2>
             </div>
-            <div className="flex items-center justify-between px-4 py-4">
+            <Link
+              href="/about"
+              className="flex items-center gap-3 px-4 py-4 hover:bg-muted/30 transition-colors"
+            >
+              <div className="flex items-center justify-center size-10 rounded-full bg-muted/50 shrink-0">
+                <BookOpen className="size-5 text-muted-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground">서비스 소개</p>
+                <p className="text-xs text-muted-foreground">매칭미? 서비스에 대해 알아보기</p>
+              </div>
+              <ChevronLeft className="size-5 text-muted-foreground rotate-180 shrink-0" />
+            </Link>
+            <div className="flex items-center justify-between px-4 py-4 border-t border-border/50">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center size-10 rounded-full bg-muted/50">
                   <Info className="size-5 text-muted-foreground" />

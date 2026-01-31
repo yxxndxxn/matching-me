@@ -125,12 +125,12 @@ export function FeedList() {
     <div className="min-h-screen pb-24 lg:pb-8">
       <div className="lg:hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background px-4 sm:px-6 pt-14 pb-6">
         <h1 className="text-2xl font-bold text-foreground tracking-tight">매칭미?</h1>
-        <p className="text-sm text-muted-foreground mt-1.5">나와 맞는 룸메이트를 찾아보세요</p>
+        <p className="text-sm text-muted-foreground mt-1.5">남도학숙생을 위한 룸메이트 매칭 플랫폼</p>
       </div>
       <div className="hidden lg:block px-4 sm:px-6 lg:px-6 pt-8 pb-4">
         <div className="max-w-2xl mx-auto lg:max-w-4xl">
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">룸메이트 찾기</h1>
-          <p className="text-sm text-muted-foreground mt-1">조건에 맞는 룸메이트를 찾아보세요</p>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">남도학숙 룸메이트 찾기</h1>
+          <p className="text-sm text-muted-foreground mt-1">남도학숙생을 위한 룸메이트 매칭 플랫폼 · 나와 꼭 맞는 룸메이트를 만나보세요</p>
         </div>
       </div>
       <FilterBar onFilterChange={handleFilterChange} />

@@ -1,6 +1,6 @@
 "use client"
 
-// 루트 "/" 는 미들웨어에서 미로그인 시 /login, 로그인 시 /feed 로 리다이렉트됨.
+// 루트 "/" 는 미들웨어에서 미로그인 시 /login, 로그인 시 /dashboard 로 리다이렉트됨.
 // 아래는 미들웨어를 거치지 않은 경우(예: 클라이언트 네비)를 위한 폴백.
 
 import { useEffect } from "react"

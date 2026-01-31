@@ -52,7 +52,7 @@ function LoginContent() {
       const baseUrl =
         process.env.NEXT_PUBLIC_APP_URL ||
         (typeof window !== "undefined" ? window.location.origin : "");
-      const nextPath = searchParams.get("redirectTo") || "/feed";
+      const nextPath = searchParams.get("redirectTo") || "/dashboard";
       const redirectTo = `${baseUrl}/api/auth/callback?next=${encodeURIComponent(nextPath)}`;
 
       const { error } = await supabase.auth.signInWithOAuth({
