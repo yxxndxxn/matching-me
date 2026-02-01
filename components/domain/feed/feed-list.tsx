@@ -72,7 +72,11 @@ export function FeedList() {
 
   const displayedCandidates = useMemo(() => {
     let list = profiles
-    if (activeTab === "ai") list = list.filter((p) => (p.matchScore ?? 0) >= 80)
+    if (activeTab === "ai") {
+      list = list
+        .filter((p) => (p.matchScore ?? 0) >= 75)
+        .sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
+    }
     return list
   }, [profiles, activeTab])
 
@@ -176,7 +180,7 @@ export function FeedList() {
       </div>
       <FilterBar onFilterChange={handleFilterChange} />
       <TabMenu activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
-      <main className="px-4 sm:px-6 lg:px-6 py-4">
+      <main className="px-4 sm:px-6 lg:px-6 py-8">
         <div className="max-w-2xl mx-auto lg:max-w-4xl">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16 px-6 text-center">

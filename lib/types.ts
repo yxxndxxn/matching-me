@@ -54,12 +54,14 @@ export interface UserProfile {
   introduction: string;
   avatarUrl?: string;
   matchScore?: number;
+  /** 내 프로필과 일치하는 항목 태그 (예: ["잠버릇 일치", "비흡연자 동일"]) */
+  matchTags?: string[];
 }
 
 /** DB ProfileRow → UI UserProfile (마이페이지 등) */
 export function profileRowToUserProfile(
   row: ProfileRow,
-  options?: { id?: string; matchScore?: number }
+  options?: { id?: string; matchScore?: number; matchTags?: string[] }
 ): UserProfile {
   return {
     id: options?.id ?? row.id,
@@ -79,6 +81,7 @@ export function profileRowToUserProfile(
     introduction: row.introduction ?? "",
     avatarUrl: row.avatar_url ?? undefined,
     matchScore: options?.matchScore,
+    matchTags: options?.matchTags,
   };
 }
 

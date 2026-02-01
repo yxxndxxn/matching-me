@@ -372,7 +372,7 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
             <div className="flex flex-wrap gap-2">
               {lifestyleTags.map((tag) => (
                 <Badge key={tag} variant="secondary" className="text-xs font-medium py-1.5 px-3 bg-muted/70">
-                  {tag}
+                  #{tag}
                 </Badge>
               ))}
             </div>

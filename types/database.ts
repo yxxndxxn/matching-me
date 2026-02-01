@@ -45,6 +45,11 @@ export interface Database {
         Insert: DailyLimitInsert;
         Update: DailyLimitUpdate;
       };
+      pair_ai_summaries: {
+        Row: PairAiSummaryRow;
+        Insert: PairAiSummaryInsert;
+        Update: PairAiSummaryUpdate;
+      };
     };
     Enums: {
       gender_type: GenderType;
@@ -160,3 +165,21 @@ export type DailyLimitUpdate = Partial<
 > & {
   updated_at?: string;
 };
+
+// --- pair_ai_summaries ---
+export interface PairAiSummaryRow {
+  id: string;
+  viewer_id: string;
+  target_post_id: string;
+  ai_summary: string;
+  created_at: string;
+}
+
+export type PairAiSummaryInsert = Omit<PairAiSummaryRow, "id" | "created_at"> & {
+  id?: string;
+  created_at?: string;
+};
+
+export type PairAiSummaryUpdate = Partial<
+  Omit<PairAiSummaryRow, "id" | "viewer_id" | "target_post_id" | "created_at">
+>;

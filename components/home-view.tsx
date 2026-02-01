@@ -55,7 +55,7 @@ export function HomeView({
   const displayedCandidates = useMemo(() => {
     if (showEmpty) return []
     let candidates = sampleProfiles
-    if (activeTab === "ai") candidates = candidates.filter((p) => (p.matchScore || 0) >= 80)
+    if (activeTab === "ai") candidates = candidates.filter((p) => (p.matchScore || 0) >= 75)
     if (filters.dormitory !== "all") candidates = candidates.filter((p) => (filters.dormitory === "dongjak" ? p.dormitory === "dongjak" : p.dormitory === "eunpyeong"))
     if (filters.gender !== "all") candidates = candidates.filter((p) => p.gender === filters.gender)
     if (filters.majorCategory !== "all") candidates = candidates.filter((p) => p.majorCategory === filters.majorCategory)

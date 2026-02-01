@@ -2,13 +2,11 @@
 
 import React from "react"
 
-import { Bookmark, Sparkles } from "lucide-react"
+import { Bookmark, Check, ChevronRight, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils/cn"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import type { UserProfile } from "@/lib/types"
 import { getLifestyleTags, getMajorCategoryLabel, getDormitoryLabel } from "@/lib/types"
-import { toast } from "sonner"
-
 interface CandidateCardProps {
   profile: UserProfile
   isSaved?: boolean
@@ -74,11 +72,6 @@ export function CandidateCard({
   const handleSave = (e: React.MouseEvent) => {
     e.stopPropagation()
     onSave?.()
-    if (!isSaved) {
-      toast.success("찜 목록에 추가했어요!", { description: "마이페이지에서 확인할 수 있어요.", duration: 3000 })
-    } else {
-      toast.info("찜 목록에서 제거했어요.", { duration: 2000 })
-    }
   }
 
   return (
@@ -125,7 +118,7 @@ export function CandidateCard({
                 key={tag}
                 className="inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-medium bg-secondary/80 text-secondary-foreground"
               >
-                {tag}
+                #{tag}
               </span>
             ))}
           </div>
@@ -136,7 +129,25 @@ export function CandidateCard({
         </div>
       </div>
 
-      <div className="flex items-center justify-end mt-5 pt-4 border-t border-border/30">
+      {isAiRecommended && profile.matchTags && profile.matchTags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-2 mt-4 pt-4 border-t border-border/30">
+          {profile.matchTags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400"
+            >
+              <Check className="size-3 shrink-0" strokeWidth={2.5} />
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/30">
+        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          탭해서 상세보기
+          <ChevronRight className="size-4" />
+        </span>
         <button
           onClick={handleSave}
           className={cn(

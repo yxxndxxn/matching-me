@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ArrowLeft,
@@ -94,6 +94,37 @@ export function ProfileDetailView({
   const displayContact = revealedContact ?? { otherContact: profile.otherContact ?? "", kakaoId: profile.kakaoId ?? "" }
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [revealLoading, setRevealLoading] = useState(false)
+  const [pairAiSummary, setPairAiSummary] = useState<string | null>(null)
+  const [pairSummaryLoading, setPairSummaryLoading] = useState(true)
+
+  useEffect(() => {
+    const targetPostId = String(profile.id)
+    let cancelled = false
+    setPairSummaryLoading(true)
+    setPairAiSummary(null)
+    fetch("/api/matching/pair-summary", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ targetPostId }),
+      credentials: "include",
+    })
+      .then(async (res) => {
+        if (!res.ok) return { aiSummary: null }
+        try {
+          return (await res.json()) as { aiSummary?: string | null }
+        } catch {
+          return { aiSummary: null }
+        }
+      })
+      .then((data) => {
+        if (!cancelled && data?.aiSummary) setPairAiSummary(data.aiSummary)
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setPairSummaryLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [profile.id])
   const lifestyleTags = getLifestyleTags(profile)
   const majorCategoryLabel = getMajorCategoryLabel(profile.majorCategory)
 
@@ -181,11 +212,28 @@ export function ProfileDetailView({
           <div className="flex flex-wrap justify-center gap-2 mt-5">
             {lifestyleTags.map((tag) => (
               <span key={tag} className="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
-                {tag}
+                #{tag}
               </span>
             ))}
           </div>
           </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-4">
+        <div className="w-full px-6">
+          <div className="max-w-2xl mx-auto lg:max-w-4xl">
+            <h3 className="text-sm font-semibold text-foreground mb-4">우리 둘의 시너지</h3>
+            <div className="bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-2xl border border-indigo-500/20 p-5">
+              {pairSummaryLoading ? (
+                <p className="text-sm text-muted-foreground animate-pulse">AI 시너지 요약 생성 중…</p>
+              ) : pairAiSummary ? (
+                <p className="text-sm text-foreground leading-relaxed">{pairAiSummary}</p>
+              ) : (
+                <p className="text-sm text-muted-foreground">매칭 점수 75점 이상일 때 AI 시너지 요약이 제공됩니다.</p>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -222,14 +270,10 @@ export function ProfileDetailView({
           </div>
         </div>
       </section>
-
       <section className="py-4">
         <div className="w-full px-6">
           <div className="max-w-2xl mx-auto lg:max-w-4xl">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="size-4 text-primary" />
-              <h3 className="text-sm font-semibold text-foreground">자기소개</h3>
-            </div>
+            <h3 className="text-sm font-semibold text-foreground mb-4">자기소개</h3>
             <div className="bg-card rounded-2xl border border-border/50 p-5">
               <p className="text-sm text-muted-foreground leading-relaxed">{profile.introduction}</p>
             </div>
