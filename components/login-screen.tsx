@@ -36,7 +36,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
         <p className="text-center text-xs text-muted-foreground px-4">계속 진행하면 서비스 이용약관 및 개인정보 처리방침에 동의하게 됩니다</p>
       </div>
       <div className="absolute bottom-8 text-center">
-        <p className="text-xs text-muted-foreground/60">대학생을 위한 룸메이트 매칭 서비스</p>
+        <p className="text-xs text-muted-foreground/60">남도학숙 재사생을 위한 룸메이트 매칭 서비스</p>
       </div>
     </div>
   )

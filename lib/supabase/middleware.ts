@@ -47,27 +47,29 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isAuthRoute =
-    request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname === "/";
   const isProtectedRoute =
     request.nextUrl.pathname.startsWith("/dashboard") ||
     request.nextUrl.pathname.startsWith("/profile") ||
     request.nextUrl.pathname.startsWith("/onboarding");
 
+  // 보호 경로(/dashboard, /profile, /onboarding) 미로그인 시 랜딩(/)으로 리다이렉트
   if (isProtectedRoute && !user) {
-    const redirectUrl = new URL("/login", request.url);
+    const redirectUrl = new URL("/", request.url);
     redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (request.nextUrl.pathname === "/") {
-    if (!user) return NextResponse.redirect(new URL("/login", request.url));
+  // 루트(/) 로그인 시 대시보드로, 미로그인 시 랜딩 표시 (리다이렉트 안 함)
+  if (request.nextUrl.pathname === "/" && user) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  if (isAuthRoute && user && request.nextUrl.pathname === "/login") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // /login 접속 시 랜딩(/)으로 리다이렉트 (쿼리 보존) — 로그인은 랜딩 하단 CTA에서 처리
+  if (request.nextUrl.pathname === "/login") {
+    if (user) return NextResponse.redirect(new URL("/dashboard", request.url));
+    const redirectUrl = new URL("/", request.url);
+    request.nextUrl.searchParams.forEach((v, k) => redirectUrl.searchParams.set(k, v));
+    return NextResponse.redirect(redirectUrl);
   }
 
   // 이미 프로필이 있으면 온보딩 화면 대신 대시보드로

@@ -193,7 +193,7 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
         return
       }
       setShowWithdrawConfirm(false)
-      signOut("/login?message=withdrawn")
+      signOut("/?message=withdrawn")
     } catch {
       toast.error("탈퇴 처리 중 오류가 발생했어요.")
       setShowWithdrawConfirm(false)
@@ -292,7 +292,7 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
     );
   }
   if (currentPage === "notifications") return <PlaceholderPage title="알림 설정" onBack={handleBack} />
-  if (currentPage === "settings") return <SettingsPage onBack={handleBack} onOpenPrivacy={() => setCurrentPage("privacy")} onWithdrawSuccess={() => signOut("/login?message=withdrawn")} />
+  if (currentPage === "settings") return <SettingsPage onBack={handleBack} onOpenPrivacy={() => setCurrentPage("privacy")} onWithdrawSuccess={() => signOut("/?message=withdrawn")} />
   if (currentPage === "privacy") return <PrivacyPage onBack={handleBack} />
   if (currentPage === "savedRoommates") return <SavedRoommatesPage onBack={handleBack} savedProfiles={savedProfiles} onViewProfile={handleViewSavedProfile} />
 
