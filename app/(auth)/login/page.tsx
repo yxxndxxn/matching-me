@@ -2,7 +2,9 @@
 
 // Phase 3.1: Google OAuth 로그인 + 로그인/OAuth 에러 처리 (toast)
 
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import dogImage from "@/app/assets/dog_charactor_crop.png";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -77,19 +79,34 @@ function LoginContent() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-6">
-      <h1 className="text-2xl font-semibold">매칭미?</h1>
-      <p className="text-muted-foreground text-center text-sm">
-        룸메이트 매칭을 위해 Google로 로그인해 주세요.
-      </p>
-      <button
-        type="button"
-        onClick={handleGoogleLogin}
-        className="flex items-center justify-center gap-3 rounded-xl border border-border bg-background px-5 py-3 text-sm font-medium shadow-sm hover:bg-muted transition-colors"
-      >
-        <GoogleLogo className="size-5 shrink-0" />
-        <span>Google로 로그인</span>
-      </button>
+    <div className="flex min-h-screen flex-col items-center justify-center px-8 relative">
+      <div className="flex flex-col items-center gap-6 mb-12">
+        <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shadow-lg border border-primary/10 p-2">
+          <Image src={dogImage} alt="매칭미 마스코트" className="w-full h-full object-contain" priority />
+        </div>
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">매칭미?</h1>
+          <p className="text-muted-foreground mt-2 text-base">
+            나에게 딱 맞는 룸메이트를 찾아보세요
+          </p>
+        </div>
+      </div>
+      <div className="w-full max-w-sm space-y-4">
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="w-full h-14 flex items-center justify-center gap-3 rounded-2xl border border-border bg-card text-base font-medium shadow-sm hover:bg-muted/50 transition-colors"
+        >
+          <GoogleLogo className="size-5 shrink-0" />
+          <span>Google로 계속하기</span>
+        </button>
+        <p className="text-center text-xs text-muted-foreground px-4">
+          계속 진행하면 서비스 이용약관 및 개인정보 처리방침에 동의하게 됩니다
+        </p>
+      </div>
+      <div className="absolute bottom-8 left-0 right-0 text-center">
+        <p className="text-xs text-muted-foreground/60">대학생을 위한 룸메이트 매칭 서비스</p>
+      </div>
     </div>
   );
 }
