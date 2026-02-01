@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import React from "react"
 
@@ -8,7 +8,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       theme="light"
-      className="toaster group lg:!left-[calc(50%+8rem)]"
+      className="toaster group"
       style={
         {
           '--normal-bg': 'var(--popover)',

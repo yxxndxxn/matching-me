@@ -39,7 +39,6 @@ export function SettingsPage({ onBack, onOpenPrivacy, onWithdrawSuccess }: Setti
         return
       }
       setShowWithdrawConfirm(false)
-      toast.success("회원 탈퇴가 완료되었어요.")
       onWithdrawSuccess()
     } catch {
       toast.error("탈퇴 처리 중 오류가 발생했어요.")
@@ -171,7 +170,7 @@ export function SettingsPage({ onBack, onOpenPrivacy, onWithdrawSuccess }: Setti
                 void handleWithdrawConfirm();
               }}
               disabled={withdrawing}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-white hover:bg-destructive/90"
             >
               {withdrawing ? "처리 중…" : "탈퇴하기"}
             </AlertDialogAction>

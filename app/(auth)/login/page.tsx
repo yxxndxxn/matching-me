@@ -4,7 +4,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { LoadingState } from "@/components/loading-state";
 
@@ -31,8 +31,11 @@ function GoogleLogo({ className }: { className?: string }) {
   );
 }
 
+const WITHDRAWN_TOAST_ID = "withdrawal-complete"
+
 function LoginContent() {
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams()
+  const hasShownWithdrawnRef = useRef(false)
 
   useEffect(() => {
     const error = searchParams.get("error");
@@ -42,8 +45,9 @@ function LoginContent() {
         description: "다시 시도해 주세요. 문제가 계속되면 관리자에게 문의해 주세요.",
       });
     }
-    if (message === "withdrawn") {
-      toast.success("회원 탈퇴가 완료되었어요.");
+    if (message === "withdrawn" && !hasShownWithdrawnRef.current) {
+      hasShownWithdrawnRef.current = true
+      toast.success("회원 탈퇴가 완료되었어요.", { id: WITHDRAWN_TOAST_ID })
     }
   }, [searchParams]);
 
