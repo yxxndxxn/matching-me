@@ -34,7 +34,7 @@ function profileToDefaultValues(profile: UserProfile): Partial<OnboardingFormSch
     grade: profile.grade,
     dormitory: profile.dormitory,
     other_contact: profile.otherContact ?? "",
-    kakao_id: profile.kakaoId ?? "",
+    contact: profile.contact ?? "",
     chronotype: profile.chronotype,
     sleeping_habit: profile.sleepingHabit,
     smoking: profile.smoking,
@@ -62,7 +62,7 @@ export function ProfileEditForm({ profile, onSaved, onCancel }: ProfileEditFormP
   const majorCategory = watch("major_category") as MajorCategory | ""
   const grade = watch("grade")
   const dormitory = watch("dormitory") as Dormitory | ""
-  const kakaoId = watch("kakao_id")
+  const contact = watch("contact")
   const chronotype = watch("chronotype")
   const sleepingHabit = watch("sleeping_habit") as SleepingHabit | ""
   const smoking = watch("smoking")
@@ -108,7 +108,7 @@ export function ProfileEditForm({ profile, onSaved, onCancel }: ProfileEditFormP
           grade: data.grade,
           dormitory: data.dormitory,
           other_contact: data.other_contact || null,
-          kakao_id: data.kakao_id || null,
+          contact: data.contact || null,
           chronotype: data.chronotype,
           sleeping_habit: data.sleeping_habit,
           smoking: data.smoking,
@@ -245,13 +245,13 @@ export function ProfileEditForm({ profile, onSaved, onCancel }: ProfileEditFormP
         <section className="space-y-4">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">연락처</h2>
           <div className="space-y-2">
-            <Label htmlFor="edit-kakao_id">카카오톡 ID</Label>
-            <Input id="edit-kakao_id" placeholder="카카오톡 ID" {...register("kakao_id")} className="h-12 bg-card" />
-            {errors.kakao_id && <p className="text-xs text-destructive">{errors.kakao_id.message}</p>}
+            <Label htmlFor="edit-contact">연락처</Label>
+            <Input id="edit-contact" placeholder="카카오톡 ID, 전화번호 등 연락 가능한 수단" {...register("contact")} className="h-12 bg-card" />
+            {errors.contact && <p className="text-xs text-destructive">{errors.contact.message}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="edit-other_contact">기타 연락처</Label>
-            <Input id="edit-other_contact" placeholder="이메일, SNS 등" {...register("other_contact")} className="h-12 bg-card" />
+            <Input id="edit-other_contact" placeholder="추가 연락처 (선택)" {...register("other_contact")} className="h-12 bg-card" />
           </div>
         </section>
 

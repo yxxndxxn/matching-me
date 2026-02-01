@@ -70,7 +70,7 @@ export interface ProfileRow {
   grade: Grade;
   dormitory: DormitoryType;
   other_contact: string | null;
-  kakao_id: string | null;
+  contact: string | null;
   chronotype: ChronotypeType | null;
   sleeping_habit: SleepingHabitType;
   smoking: boolean;

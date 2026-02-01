@@ -380,8 +380,8 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
             <h3 className="text-sm font-semibold text-foreground mb-4">연락처</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-muted-foreground">카카오톡 ID</span>
-                <span className="text-sm font-medium text-foreground">{profile.kakaoId}</span>
+                <span className="text-sm text-muted-foreground">연락처</span>
+                <span className="text-sm font-medium text-foreground">{profile.contact}</span>
               </div>
               <div className="flex items-center justify-between py-2">
                 <span className="text-sm text-muted-foreground">기타 연락처</span>

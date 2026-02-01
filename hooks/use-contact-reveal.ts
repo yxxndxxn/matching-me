@@ -7,7 +7,7 @@ import { useDailyLimitContext } from "@/components/providers/daily-limit-provide
 
 export interface RevealedContact {
   otherContact: string;
-  kakaoId: string;
+  contact: string;
 }
 
 export function useContactReveal(): {
@@ -32,8 +32,8 @@ export function useContactReveal(): {
         }
         await refetchDaily();
         const contact =
-          json.other_contact != null || json.kakao_id != null
-            ? { otherContact: json.other_contact ?? "", kakaoId: json.kakao_id ?? "" }
+          json.other_contact != null || json.contact != null
+            ? { otherContact: json.other_contact ?? "", contact: json.contact ?? "" }
             : undefined;
         return { success: true, contact };
       } catch (e) {

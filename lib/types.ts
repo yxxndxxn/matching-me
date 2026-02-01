@@ -45,7 +45,7 @@ export interface UserProfile {
   grade: string;
   dormitory: Dormitory;
   otherContact: string;
-  kakaoId: string;
+  contact: string;
   chronotype: "morning" | "night";
   sleepingHabit: SleepingHabit;
   smoking: boolean;
@@ -72,7 +72,7 @@ export function profileRowToUserProfile(
     grade: row.grade,
     dormitory: row.dormitory,
     otherContact: row.other_contact ?? "",
-    kakaoId: row.kakao_id ?? "",
+    contact: row.contact ?? "",
     chronotype: row.chronotype ?? "morning",
     sleepingHabit: row.sleeping_habit,
     smoking: row.smoking,
@@ -129,7 +129,7 @@ export const sampleProfiles: UserProfile[] = [
     grade: "2학년",
     dormitory: "dongjak",
     otherContact: "",
-    kakaoId: "seoyeon_kim",
+    contact: "seoyeon_kim",
     chronotype: "morning",
     sleepingHabit: "none",
     smoking: false,
@@ -148,7 +148,7 @@ export const sampleProfiles: UserProfile[] = [
     grade: "3학년",
     dormitory: "dongjak",
     otherContact: "",
-    kakaoId: "minjun_park",
+    contact: "minjun_park",
     chronotype: "night",
     sleepingHabit: "snoring",
     smoking: false,
@@ -167,7 +167,7 @@ export const sampleProfiles: UserProfile[] = [
     grade: "1학년",
     dormitory: "eunpyeong",
     otherContact: "",
-    kakaoId: "jieun_lee",
+    contact: "jieun_lee",
     chronotype: "morning",
     sleepingHabit: "none",
     smoking: false,
@@ -186,7 +186,7 @@ export const sampleProfiles: UserProfile[] = [
     grade: "4학년",
     dormitory: "dongjak",
     otherContact: "",
-    kakaoId: "junho_choi",
+    contact: "junho_choi",
     chronotype: "night",
     sleepingHabit: "grinding",
     smoking: false,
@@ -205,7 +205,7 @@ export const sampleProfiles: UserProfile[] = [
     grade: "2학년",
     dormitory: "eunpyeong",
     otherContact: "",
-    kakaoId: "haneul_jung",
+    contact: "haneul_jung",
     chronotype: "morning",
     sleepingHabit: "none",
     smoking: false,
@@ -226,7 +226,7 @@ export const currentUserProfile: UserProfile = {
   grade: "3학년",
   dormitory: "dongjak",
   otherContact: "",
-  kakaoId: "gildong_hong",
+  contact: "gildong_hong",
   chronotype: "night",
   sleepingHabit: "none",
   smoking: false,

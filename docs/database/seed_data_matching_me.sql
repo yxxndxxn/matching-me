@@ -29,7 +29,7 @@
 -- id = auth.users(id). gender_type: male|female, grade: 1학년~4학년, dormitory_type: dongjak|eunpyeong
 
 INSERT INTO profiles (
-  id, name, gender, major_category, grade, dormitory, other_contact, kakao_id,
+  id, name, gender, major_category, grade, dormitory, other_contact, contact,
   chronotype, sleeping_habit, smoking, cleanliness, noise_sensitivity, introduction, created_at, updated_at
 ) VALUES
   ('a0000001-0001-4000-8000-000000000001', '김서연', 'female', 'humanities', '2학년', 'dongjak', NULL, 'kim_seoyeon', 'morning', 'none', false, 4, 3, '아침형이라 새벽에 조용히 공부하는 편이에요. 깔끔한 방 선호해요!', NOW() - (random() * INTERVAL '7 days'), NOW()),
@@ -146,7 +146,7 @@ SELECT gender, COUNT(*) AS user_count FROM profiles GROUP BY gender;
 -- Schema Compliance (supabase-schema.sql 기준 재점검)
 -- =====================================================
 -- [x] profiles: id(FK auth.users), name, gender(gender_type), major_category(major_category_type),
---     grade(TEXT '1학년'~'4학년'), dormitory(dormitory_type), other_contact, kakao_id, chronotype, sleeping_habit,
+--     grade(TEXT '1학년'~'4학년'), dormitory(dormitory_type), other_contact, contact, chronotype, sleeping_habit,
 --     smoking, cleanliness(1-5), noise_sensitivity(1-5), introduction(≤500), created_at, updated_at
 -- [x] matching_posts: id, user_id(FK auth.users), dormitory, ai_summary, match_score(INTEGER 0-100), is_active, created_at, updated_at
 -- [x] view_logs: id, viewer_id(FK auth.users), viewed_post_id(FK matching_posts), contact_revealed, viewed_at

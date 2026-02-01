@@ -26,7 +26,7 @@ export interface OnboardingFormData {
   grade: string;
   dormitory: string;
   other_contact: string;
-  kakao_id: string;
+  contact: string;
   chronotype: "morning" | "night";
   sleeping_habit: string;
   smoking: boolean;
@@ -48,7 +48,7 @@ const defaultValues: Partial<OnboardingFormSchemaType> = {
   grade: undefined,
   dormitory: undefined,
   other_contact: "",
-  kakao_id: "",
+  contact: "",
   chronotype: undefined,
   sleeping_habit: undefined,
   smoking: undefined,
@@ -73,7 +73,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
   const majorCategory = watch("major_category") as MajorCategory | ""
   const grade = watch("grade")
   const dormitory = watch("dormitory") as Dormitory | ""
-  const kakaoId = watch("kakao_id")
+  const contact = watch("contact")
   const chronotype = watch("chronotype")
   const sleepingHabit = watch("sleeping_habit") as SleepingHabit | ""
   const smoking = watch("smoking")
@@ -207,15 +207,15 @@ export function Onboarding({ onComplete }: OnboardingProps) {
             {step === 2 && (
               <div className="space-y-6 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="kakao_id" className="text-sm font-medium text-foreground">카카오톡 ID</Label>
-                  <Input id="kakao_id" placeholder="카카오톡 ID를 입력하세요" {...register("kakao_id")} className="h-12 bg-card" />
-                  {errors.kakao_id && <p className="text-xs text-destructive">{errors.kakao_id.message}</p>}
-                  <p className="text-xs text-muted-foreground">카카오톡 설정에서 ID 검색 허용을 활성화해주세요</p>
+                  <Label htmlFor="contact" className="text-sm font-medium text-foreground">연락처</Label>
+                  <Input id="contact" placeholder="카카오톡 ID, 전화번호 등 연락 가능한 수단을 입력하세요" {...register("contact")} className="h-12 bg-card" />
+                  {errors.contact && <p className="text-xs text-destructive">{errors.contact.message}</p>}
+                  <p className="text-xs text-muted-foreground">카카오톡 ID 입력 시, 설정에서 ID 검색 허용을 활성화해주세요</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="other_contact" className="text-sm font-medium text-foreground">기타 연락처</Label>
-                  <Input id="other_contact" placeholder="이메일, SNS 등 연락 가능한 수단을 입력하세요" {...register("other_contact")} className="h-12 bg-card" />
-                  <p className="text-xs text-muted-foreground">선택 입력입니다. 카카오톡 ID만 있어도 됩니다.</p>
+                  <Input id="other_contact" placeholder="추가로 연락받을 수단이 있다면 입력하세요 ex) 이메일, 카카오톡 오픈채팅 주소 등" {...register("other_contact")} className="h-12 bg-card" />
+                  <p className="text-xs text-muted-foreground">선택 입력입니다.</p>
                 </div>
                 <div className="pt-4">
                   <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
@@ -282,7 +282,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
         </AnimatePresence>
       </div>
       <div className="sticky bottom-0 px-6 py-4 bg-background border-t border-border">
-        <Button onClick={handleNext} className="w-full h-12 text-base font-semibold" disabled={(step === 1 && (!name || !gender || !majorCategory || !grade || !dormitory)) || (step === 2 && !kakaoId) || (step === 3 && (chronotype === null || !sleepingHabit || smoking === null || !introduction))}>
+        <Button onClick={handleNext} className="w-full h-12 text-base font-semibold" disabled={(step === 1 && (!name || !gender || !majorCategory || !grade || !dormitory)) || (step === 2 && !contact) || (step === 3 && (chronotype === null || !sleepingHabit || smoking === null || !introduction))}>
           {step === 3 ? "프로필 완성하기" : "다음"}
         </Button>
       </div>

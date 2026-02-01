@@ -38,7 +38,7 @@ export function PrivacyPage({ onBack }: PrivacyPageProps) {
           <section className="bg-card rounded-2xl border border-border/50 p-5 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">1. 수집하는 개인정보 항목</h3>
             <ul className="text-sm text-muted-foreground space-y-2 list-disc list-inside">
-              <li><strong className="text-foreground">필수:</strong> 이름, 성별, 학년, 학숙구분, 계열, 카카오톡 ID, 생활 패턴, 잠버릇, 흡연 여부, 청결도, 소음 민감도, 자기소개</li>
+              <li><strong className="text-foreground">필수:</strong> 이름, 성별, 학년, 학숙구분, 계열, 연락처, 생활 패턴, 잠버릇, 흡연 여부, 청결도, 소음 민감도, 자기소개</li>
               <li><strong className="text-foreground">선택:</strong> 기타 연락처(이메일, SNS 등)</li>
               <li>Google 로그인 시: 이메일, 프로필 사진(선택 저장)</li>
             </ul>
@@ -61,7 +61,7 @@ export function PrivacyPage({ onBack }: PrivacyPageProps) {
           <section className="bg-card rounded-2xl border border-border/50 p-5 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">4. 제3자 제공</h3>
             <p className="text-sm text-muted-foreground">
-              연락처 공개 기능을 통해 동의한 다른 회원에게만 카카오톡 ID·기타 연락처가 제한적으로 공개됩니다. 그 외에는 동의 없이 제3자에게 제공하지 않습니다.
+              연락처 공개 기능을 통해 동의한 다른 회원에게만 연락처·기타 연락처가 제한적으로 공개됩니다. 그 외에는 동의 없이 제3자에게 제공하지 않습니다.
             </p>
           </section>
 

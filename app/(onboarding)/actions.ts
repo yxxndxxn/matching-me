@@ -47,7 +47,7 @@ export async function completeOnboarding(
     grade: data.grade as "1학년" | "2학년" | "3학년" | "4학년",
     dormitory: data.dormitory as "dongjak" | "eunpyeong",
     other_contact: data.other_contact || null,
-    kakao_id: data.kakao_id || null,
+    contact: data.contact || null,
     chronotype: data.chronotype as "morning" | "night",
     sleeping_habit: data.sleeping_habit as "none" | "grinding" | "snoring",
     smoking: data.smoking,

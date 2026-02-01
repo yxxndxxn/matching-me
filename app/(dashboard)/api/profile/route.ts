@@ -111,7 +111,7 @@ export async function PUT(request: Request) {
     if (body.grade != null) data.grade = body.grade as ProfileUpdate["grade"];
     if (body.dormitory != null) data.dormitory = body.dormitory as ProfileUpdate["dormitory"];
     if (body.other_contact != null) data.other_contact = body.other_contact as string | null;
-    if (body.kakao_id != null) data.kakao_id = body.kakao_id as string | null;
+    if (body.contact != null) data.contact = body.contact as string | null;
     if (body.chronotype != null) data.chronotype = body.chronotype as ProfileUpdate["chronotype"];
     if (body.sleeping_habit != null) data.sleeping_habit = body.sleeping_habit as ProfileUpdate["sleeping_habit"];
     if (body.smoking != null) data.smoking = body.smoking as boolean;

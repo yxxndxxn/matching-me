@@ -75,7 +75,7 @@ export async function POST(request: Request) {
         return NextResponse.json({
           ok: true,
           other_contact: profile.other_contact ?? undefined,
-          kakao_id: profile.kakao_id ?? undefined,
+          contact: profile.contact ?? undefined,
         });
       }
     }

@@ -38,7 +38,7 @@ CREATE TABLE profiles (
   grade TEXT NOT NULL CHECK (grade IN ('1학년', '2학년', '3학년', '4학년')),
   dormitory dormitory_type NOT NULL,
   other_contact TEXT,
-  kakao_id TEXT,
+  contact TEXT,
   chronotype chronotype_type,
   sleeping_habit sleeping_habit_type DEFAULT 'none',
   smoking BOOLEAN DEFAULT FALSE,

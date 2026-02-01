@@ -91,7 +91,7 @@ export function ProfileDetailView({
   revealedContact,
 }: ProfileDetailViewProps) {
   const [contactRevealed, setContactRevealed] = useState(isRevealed)
-  const displayContact = revealedContact ?? { otherContact: profile.otherContact ?? "", kakaoId: profile.kakaoId ?? "" }
+  const displayContact = revealedContact ?? { otherContact: profile.otherContact ?? "", contact: profile.contact ?? "" }
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [revealLoading, setRevealLoading] = useState(false)
   const [pairAiSummary, setPairAiSummary] = useState<string | null>(null)
@@ -129,7 +129,7 @@ export function ProfileDetailView({
   const majorCategoryLabel = getMajorCategoryLabel(profile.majorCategory)
 
   const getInitials = (name: string) => name.slice(0, 2).toUpperCase()
-  const maskKakaoId = (id: string) => (id.length <= 4 ? "****" : id.slice(0, 2) + "****" + id.slice(-2))
+  const maskContact = (value: string) => (value.length <= 4 ? "****" : value.slice(0, 2) + "****" + value.slice(-2))
   const maskOtherContact = (value: string) => (value.length <= 4 ? "****" : value.slice(0, 2) + "****" + value.slice(-2))
 
   const handleRevealClick = () => {
@@ -293,11 +293,11 @@ export function ProfileDetailView({
                         <MessageCircle className="size-5 text-amber-500" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">카카오톡 ID</p>
-                        <p className="text-sm font-medium text-foreground font-mono tracking-wide">{revealedContact ? displayContact.kakaoId : maskKakaoId(displayContact.kakaoId)}</p>
+                        <p className="text-xs text-muted-foreground">연락처</p>
+                        <p className="text-sm font-medium text-foreground font-mono tracking-wide">{revealedContact ? displayContact.contact : maskContact(displayContact.contact)}</p>
                       </div>
                     </div>
-                    <Button variant="default" size="sm" onClick={() => handleCopy(displayContact.kakaoId, "카카오톡 ID")} className="h-10 px-4 rounded-xl text-xs font-semibold gap-2 bg-indigo-500 hover:bg-indigo-600">
+                    <Button variant="default" size="sm" onClick={() => handleCopy(displayContact.contact, "연락처")} className="h-10 px-4 rounded-xl text-xs font-semibold gap-2 bg-indigo-500 hover:bg-indigo-600">
                       <Copy className="size-4" /> 복사
                     </Button>
                   </div>

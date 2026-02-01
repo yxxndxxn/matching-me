@@ -188,7 +188,7 @@ erDiagram
         string grade "학년 (1학년~4학년)"
         enum dormitory "소속관 (dongjak/eunpyeong)"
         string other_contact "기타 연락처"
-        string kakao_id "카카오톡 ID"
+        string contact "연락처"
         enum chronotype "생활패턴 (morning/night)"
         enum sleeping_habit "잠버릇 (none/grinding/snoring)"
         boolean smoking "흡연여부"

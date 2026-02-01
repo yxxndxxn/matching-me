@@ -21,7 +21,7 @@ export const onboardingFormSchema = z.object({
   grade: z.enum(gradeValues, { required_error: "학년을 선택해 주세요." }),
   dormitory: z.enum(dormitoryValues, { required_error: "학숙구분을 선택해 주세요." }),
   other_contact: z.string().max(200),
-  kakao_id: z.string().min(1, "카카오톡 ID를 입력해 주세요.").max(50),
+  contact: z.string().min(1, "연락처를 입력해 주세요.").max(50),
   chronotype: z.enum(["morning", "night"], { required_error: "생활 패턴을 선택해 주세요." }),
   sleeping_habit: z.enum(sleepingHabitValues, { required_error: "잠버릇을 선택해 주세요." }),
   smoking: z.boolean(),
