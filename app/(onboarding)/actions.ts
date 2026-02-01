@@ -18,7 +18,8 @@ export type CompleteOnboardingResult =
 export async function completeOnboarding(
   data: OnboardingFormData
 ): Promise<CompleteOnboardingResult> {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -106,4 +107,12 @@ export async function completeOnboarding(
   }
 
   return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[completeOnboarding]", err);
+    return {
+      success: false,
+      error: message || "저장 중 오류가 발생했어요. 다시 시도해 주세요.",
+    };
+  }
 }
