@@ -10,14 +10,14 @@ export async function GET(request: Request) {
   const next = searchParams.get("next") ?? "/dashboard";
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/login?error=auth_callback_error`);
+    return NextResponse.redirect(`${origin}/?error=auth_callback_error`);
   }
 
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
-      return NextResponse.redirect(`${origin}/login?error=auth_callback_error`);
+      return NextResponse.redirect(`${origin}/?error=auth_callback_error`);
     }
     const {
       data: { user },
@@ -31,8 +31,8 @@ export async function GET(request: Request) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     if (msg.includes("Missing Supabase env") || msg.includes("NEXT_PUBLIC_SUPABASE")) {
-      return NextResponse.redirect(`${origin}/login?error=server_config`);
+      return NextResponse.redirect(`${origin}/?error=server_config`);
     }
   }
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_error`);
+  return NextResponse.redirect(`${origin}/?error=auth_callback_error`);
 }

@@ -36,7 +36,7 @@ export function useAuth() {
     async (redirectTo?: string) => {
       const supabase = createClient();
       await supabase.auth.signOut();
-      router.push(redirectTo ?? "/login");
+      router.push(redirectTo ?? "/");
       router.refresh();
     },
     [router]
