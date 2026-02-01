@@ -1,13 +1,28 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Heart, Shield, Sparkles, Users, ChevronRight } from "lucide-react"
+
+import dogCharacter from "@/app/assets/dog_charactor.png"
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen pb-24 bg-background">
       <div className="max-w-2xl mx-auto lg:max-w-4xl px-6 pt-12 pb-12">
         <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <div className="relative w-32 h-40 sm:w-40 sm:h-48">
+              <Image
+                src={dogCharacter}
+                alt="매칭미 마스코트"
+                fill
+                sizes="(max-width: 640px) 128px, 160px"
+                className="object-contain object-center"
+                priority
+              />
+            </div>
+          </div>
           <h1 className="text-2xl font-bold text-foreground tracking-tight">매칭미?</h1>
           <p className="text-base text-muted-foreground mt-3 font-medium">
             남도학숙생을 위한 룸메이트 매칭 플랫폼

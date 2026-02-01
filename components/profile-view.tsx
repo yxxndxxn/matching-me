@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -25,6 +26,7 @@ import {
   UserX,
   AlertCircle,
   RefreshCw,
+  Info,
 } from "lucide-react"
 import { getLifestyleTags, getMajorCategoryLabel, getDormitoryLabel, type UserProfile } from "@/lib/types"
 import { SUPPORT_KAKAO_OPEN_CHAT_URL } from "@/lib/utils/constants"
@@ -152,6 +154,7 @@ interface ProfileViewProps {
 }
 
 export function ProfileView({ onLogout }: ProfileViewProps) {
+  const router = useRouter()
   const { user, signOut } = useAuth()
   const { profile: profileData, loading: profileLoading, error: profileError, refetch: refetchProfile } = useProfile()
   const { bookmarks: savedProfiles } = useBookmarks()
@@ -405,6 +408,8 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
             <div className="px-4 py-3 border-b border-border/50">
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">지원</h3>
             </div>
+            <MenuItem icon={<Info className="size-5" />} label="서비스 소개" onClick={() => router.push("/about")} />
+            <div className="h-px bg-border/50 mx-4" />
             <MenuItem icon={<Settings className="size-5" />} label="설정" onClick={() => setCurrentPage("settings")} />
             <div className="h-px bg-border/50 mx-4" />
             <MenuItem icon={<Shield className="size-5" />} label="개인정보 보호" onClick={() => setCurrentPage("privacy")} />

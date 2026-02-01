@@ -3,6 +3,7 @@
 // Phase 3.7: 피드 로딩·빈 목록·에러 (Skeleton, Empty state, 에러 시 toast) / Phase 3.8: 찜 추가·삭제 피드백 (toast)
 
 import { useState, useMemo, useEffect } from "react"
+import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
 import { FilterBar, type FilterState } from "@/components/domain/feed/filter-bar"
 import { TabMenu } from "@/components/tab-menu"
@@ -20,6 +21,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { AlertCircle, RefreshCw, Loader2 } from "lucide-react"
+
+import dogCharacter from "@/app/assets/dog_charactor_crop.png"
 
 const tabs = [
   { id: "all", label: "전체 매칭" },
@@ -131,14 +134,44 @@ export function FeedList() {
 
   return (
     <div className="min-h-screen pb-24 lg:pb-8">
-      <div className="lg:hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background px-4 sm:px-6 pt-14 pb-6">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">매칭미?</h1>
-        <p className="text-sm text-muted-foreground mt-1.5">남도학숙생을 위한 룸메이트 매칭 플랫폼</p>
+      {/* 메인 캐릭터 배너 (모바일) */}
+      <div className="lg:hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background px-4 sm:px-6 pt-14 overflow-hidden">
+        <div className="flex items-center gap-4 max-w-2xl mx-auto">
+          <div className="shrink-0 w-20 h-24 relative overflow-hidden rounded-b-lg bg-transparent">
+            <Image
+              src={dogCharacter}
+              alt="매칭미 마스코트"
+              fill
+              sizes="80px"
+              className="object-contain object-center"
+              priority
+            />
+          </div>
+          <div className="min-w-0 flex-1 mb-2">
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">매칭미?</h1>
+            <p className="text-sm text-muted-foreground my-1.5">남도학숙생을 위한 룸메이트 매칭 플랫폼. 나와 꼭 맞는 룸메이트를 만나보세요.</p>
+          </div>
+        </div>
       </div>
-      <div className="hidden lg:block px-4 sm:px-6 lg:px-6 pt-8 pb-4">
-        <div className="max-w-2xl mx-auto lg:max-w-4xl">
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">남도학숙 룸메이트 찾기</h1>
-          <p className="text-sm text-muted-foreground mt-1">남도학숙생을 위한 룸메이트 매칭 플랫폼 · 나와 꼭 맞는 룸메이트를 만나보세요</p>
+      {/* 메인 캐릭터 배너 (데스크톱) */}
+      <div className="hidden lg:block bg-gradient-to-br from-primary/10 via-primary/5 to-background px-4 sm:px-6 lg:px-6 pt-8 pb-6 overflow-hidden">
+        <div className="max-w-2xl mx-auto lg:max-w-4xl flex items-center gap-6">
+          <div className="shrink-0 w-28 h-28 relative overflow-hidden rounded-b-lg bg-transparent">
+            <Image
+              src={dogCharacter}
+              alt="매칭미 마스코트"
+              fill
+              sizes="112px"
+              className="object-contain object-center"
+              priority
+            />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">남도학숙 룸메이트 찾기</h1>
+            <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+              남도학숙생을 위한 룸메이트 매칭 플랫폼입니다. 우리 매칭미가 나와 잘 맞는 룸메이트를 찾는 걸 도와줄게요.
+            </p>
+          </div>
         </div>
       </div>
       <FilterBar onFilterChange={handleFilterChange} />
