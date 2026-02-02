@@ -81,9 +81,7 @@ function LoginContent() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-8 relative">
       <div className="flex flex-col items-center gap-6 mb-12">
-        <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shadow-lg border border-primary/10 p-2">
-          <Image src={dogImage} alt="매칭미 마스코트" className="w-full h-full object-contain" priority />
-        </div>
+        <Image src={dogImage} alt="매칭미 마스코트" className="w-24 h-24 object-contain" priority />
         <div className="text-center">
           <h1 className="text-3xl font-bold text-foreground tracking-tight">매칭미?</h1>
           <p className="text-muted-foreground mt-2 text-base">
