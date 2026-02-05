@@ -103,7 +103,7 @@ function LoginContent() {
         </p>
       </div>
       <div className="absolute bottom-8 left-0 right-0 text-center">
-        <p className="text-xs text-muted-foreground/60">대학생을 위한 룸메이트 매칭 서비스</p>
+        <p className="text-xs text-muted-foreground/60">남도학숙 재사생을 위한 룸메이트 매칭 서비스</p>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 // Unified User Profile Type for Matching Me App (from tmp-v0)
 
-import type { MatchingPostRow, ProfileRow } from "@/types/database";
+import type { Grade, MatchingPostRow, ProfileRow } from "@/types/database";
 
 // Major Category options
 export const majorCategories = [
@@ -42,7 +42,7 @@ export interface UserProfile {
   name: string;
   gender: "male" | "female";
   majorCategory: MajorCategory;
-  grade: string;
+  grade: Grade;
   dormitory: Dormitory;
   otherContact: string;
   contact: string;

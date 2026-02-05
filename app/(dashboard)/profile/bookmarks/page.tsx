@@ -78,7 +78,6 @@ export default function BookmarksPage() {
                   <Skeleton className="size-5 shrink-0 rounded bg-muted" />
                 </div>
               ))}
-              </div>
             </div>
           ) : bookmarks.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">

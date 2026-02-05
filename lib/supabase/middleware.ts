@@ -11,6 +11,13 @@ export async function updateSession(request: NextRequest) {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
+    console.error("[Middleware] Missing Supabase env vars: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    // Production에서는 로그인 페이지로 리다이렉트
+    if (process.env.NODE_ENV === "production") {
+      const redirectUrl = new URL("/login", request.url);
+      redirectUrl.searchParams.set("error", "config");
+      return NextResponse.redirect(redirectUrl);
+    }
     return response;
   }
 

@@ -18,7 +18,7 @@ import { majorCategories, dormitories, sleepingHabits, getMajorCategoryLabel, ty
 import type { UserProfile } from "@/lib/types"
 import { toast } from "sonner"
 
-const grades = ["1학년", "2학년", "3학년", "4학년"]
+const grades = ["1학년", "2학년", "3학년", "4학년"] as const
 
 interface ProfileEditFormProps {
   profile: UserProfile

@@ -10,9 +10,10 @@ type DashboardNavContextValue = {
 };
 
 const noop = () => {};
+const noopRegister = (_fn: () => void) => noop;
 
 const DashboardNavContext = createContext<DashboardNavContextValue>({
-  registerClearFeedSelection: noop,
+  registerClearFeedSelection: noopRegister,
   clearFeedSelection: noop,
 });
 

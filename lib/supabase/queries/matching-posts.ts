@@ -34,7 +34,8 @@ export async function getMatchingPosts(
   supabase: SupabaseClient,
   options?: FeedFilters | GetMatchingPostsOptions
 ): Promise<{ data: FeedItem[]; error: PostgrestError | null }> {
-  const filters = options && "filters" in options ? options.filters : options;
+  const filters: FeedFilters | undefined =
+    options && "filters" in options ? options.filters : (options as FeedFilters | undefined);
   const excludeUserId = options && "excludeUserId" in options ? options.excludeUserId : undefined;
 
   const { data: posts, error: postsError } = await supabase

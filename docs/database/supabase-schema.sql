@@ -145,6 +145,22 @@ CREATE INDEX idx_daily_limits_user_id ON daily_limits(user_id);
 CREATE INDEX idx_daily_limits_limit_date ON daily_limits(limit_date);
 CREATE INDEX idx_daily_limits_user_date ON daily_limits(user_id, limit_date);
 
+-- ------------------------------------------------------------
+-- 6. pair_ai_summaries (Phase 2 - 쌍별 AI 요약 캐싱)
+-- ------------------------------------------------------------
+CREATE TABLE pair_ai_summaries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  viewer_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  target_post_id UUID NOT NULL REFERENCES matching_posts(id) ON DELETE CASCADE,
+  ai_summary TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(viewer_id, target_post_id)
+);
+
+CREATE INDEX idx_pair_ai_summaries_viewer_id ON pair_ai_summaries(viewer_id);
+CREATE INDEX idx_pair_ai_summaries_target_post_id ON pair_ai_summaries(target_post_id);
+CREATE INDEX idx_pair_ai_summaries_viewer_target ON pair_ai_summaries(viewer_id, target_post_id);
+
 -- ============================================================
 -- RLS (Row Level Security)
 -- ============================================================
@@ -154,6 +170,7 @@ ALTER TABLE matching_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE view_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookmarks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE daily_limits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pair_ai_summaries ENABLE ROW LEVEL SECURITY;
 
 -- --- profiles ---
 CREATE POLICY "Users can view own profile and other profiles in same dormitory"
@@ -213,3 +230,16 @@ CREATE POLICY "Users can insert own daily_limits"
 CREATE POLICY "Users can update own daily_limits"
   ON daily_limits FOR UPDATE
   USING (auth.uid() = user_id);
+
+-- --- pair_ai_summaries: 본인 viewer_id로만 SELECT/INSERT/UPDATE ---
+CREATE POLICY "Users can view own pair summaries"
+  ON pair_ai_summaries FOR SELECT
+  USING (auth.uid() = viewer_id);
+
+CREATE POLICY "Users can insert own pair summaries"
+  ON pair_ai_summaries FOR INSERT
+  WITH CHECK (auth.uid() = viewer_id);
+
+CREATE POLICY "Users can update own pair summaries"
+  ON pair_ai_summaries FOR UPDATE
+  USING (auth.uid() = viewer_id);

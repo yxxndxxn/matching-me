@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       grade: body.grade as ProfileInsert["grade"],
       dormitory: body.dormitory as ProfileInsert["dormitory"],
       other_contact: (body.other_contact as string) ?? null,
-      kakao_id: (body.kakao_id as string) ?? null,
+      contact: (body.contact as string) ?? (body.kakao_id as string) ?? null,
       chronotype: (body.chronotype as ProfileInsert["chronotype"]) ?? null,
       sleeping_habit: (body.sleeping_habit as ProfileInsert["sleeping_habit"]) ?? "none",
       smoking: (body.smoking as boolean) ?? false,
