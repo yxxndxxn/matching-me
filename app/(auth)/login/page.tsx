@@ -6,9 +6,9 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import dogImage from "@/app/assets/dog_charactor_crop.png";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { LoadingState } from "@/components/loading-state";
+import { Loader2 } from "lucide-react";
 
 function GoogleLogo({ className }: { className?: string }) {
   return (
@@ -35,9 +35,31 @@ function GoogleLogo({ className }: { className?: string }) {
 
 const WITHDRAWN_TOAST_ID = "withdrawal-complete"
 
+/** 구글 로그인 진행 중 전용 로딩 화면 */
+function LoginLoadingScreen() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center px-8 bg-gradient-to-b from-background to-card">
+      <div className="flex flex-col items-center gap-6">
+        <Image src={dogImage} alt="" className="w-24 h-24 object-contain opacity-90" priority />
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">매칭미?</h1>
+          <p className="text-muted-foreground mt-2 text-sm">로그인 중이에요</p>
+        </div>
+        <div className="flex flex-col items-center gap-3">
+          <div className="size-14 rounded-full bg-primary/10 flex items-center justify-center">
+            <Loader2 className="size-7 text-primary animate-spin" />
+          </div>
+          <p className="text-xs text-muted-foreground">Google로 이동하고 있어요...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LoginContent() {
   const searchParams = useSearchParams()
   const hasShownWithdrawnRef = useRef(false)
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
 
   useEffect(() => {
     const error = searchParams.get("error");
@@ -54,6 +76,7 @@ function LoginContent() {
   }, [searchParams]);
 
   async function handleGoogleLogin() {
+    setIsLoggingIn(true);
     try {
       const supabase = createClient();
       const baseUrl =
@@ -69,13 +92,20 @@ function LoginContent() {
         },
       });
       if (error) {
+        setIsLoggingIn(false);
         toast.error("로그인을 시작하지 못했어요.", { description: error.message });
       }
+      // 성공 시 리다이렉트되므로 로딩 화면 유지
     } catch (e) {
+      setIsLoggingIn(false);
       toast.error("로그인 중 오류가 발생했어요.", {
         description: e instanceof Error ? e.message : "다시 시도해 주세요.",
       });
     }
+  }
+
+  if (isLoggingIn) {
+    return <LoginLoadingScreen />;
   }
 
   return (
@@ -111,7 +141,11 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<LoadingState message="잠시만 기다려 주세요" />}>
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="size-8 text-muted-foreground animate-spin" />
+      </div>
+    }>
       <LoginContent />
     </Suspense>
   );

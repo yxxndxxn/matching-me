@@ -9,7 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LoadingState } from "@/components/loading-state";
 
-const PROTECTED_PATHS = ["/dashboard", "/profile"];
+const PROTECTED_PATHS = ["/dashboard", "/profile", "/settings"];
 const PROFILE_CHECKED_COOKIE = "profile_checked";
 
 function readAndClearProfileCheckedCookie(): boolean {

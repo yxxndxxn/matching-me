@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Search, User, Info } from "lucide-react"
+import { Search, User, Settings, Info } from "lucide-react"
 
 import { cn } from "@/lib/utils/cn"
 import { useAuth } from "@/hooks/use-auth"
@@ -21,7 +21,8 @@ export function Sidebar({ dailyRevealsRemaining: _propRemaining }: SidebarProps)
   const { remaining: dailyRevealsRemaining } = useDailyLimitContext()
   const { clearFeedSelection } = useDashboardNav()
   const isHome = pathname === "/dashboard" || pathname === "/" || pathname.startsWith("/dashboard/")
-  const isProfile = pathname.startsWith("/profile")
+  const isProfile = pathname.startsWith("/profile") && !pathname.startsWith("/settings")
+  const isSettings = pathname === "/settings" || pathname.startsWith("/settings/")
   const sidebarAvatarUrl =
     (user?.user_metadata?.avatar_url as string | undefined) ??
     (user?.user_metadata?.picture as string | undefined)
@@ -62,6 +63,18 @@ export function Sidebar({ dailyRevealsRemaining: _propRemaining }: SidebarProps)
         >
           <User className="size-5 shrink-0" />
           마이페이지
+        </Link>
+        <Link
+          href="/settings"
+          className={cn(
+            "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors",
+            isSettings
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          )}
+        >
+          <Settings className="size-5 shrink-0" />
+          설정
         </Link>
         <Link
           href="/about"

@@ -17,19 +17,14 @@ import {
   ChevronLeft,
   LogOut,
   Bell,
-  Shield,
-  HelpCircle,
   Settings,
   Bookmark,
   Eye,
   BookOpen,
-  UserX,
   AlertCircle,
   RefreshCw,
-  Info,
 } from "lucide-react"
 import { getLifestyleTags, getMajorCategoryLabel, getDormitoryLabel, type UserProfile } from "@/lib/types"
-import { SUPPORT_KAKAO_OPEN_CHAT_URL } from "@/lib/utils/constants"
 import { ProfileDetailView } from "@/components/domain/profile/profile-detail-view"
 import { useAuth } from "@/hooks/use-auth"
 import { useProfile } from "@/hooks/use-profile"
@@ -40,8 +35,6 @@ import { useRevealedIds } from "@/hooks/use-revealed-ids"
 import { LoadingState } from "@/components/loading-state"
 import { Button } from "@/components/ui/button"
 import { ProfileEditForm } from "@/components/profile-edit-form"
-import { SettingsPage } from "@/components/settings-page"
-import { PrivacyPage } from "@/components/privacy-page"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -54,7 +47,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 
-type SubPage = "main" | "editProfile" | "notifications" | "settings" | "privacy" | "savedRoommates"
+type SubPage = "main" | "editProfile" | "notifications" | "savedRoommates"
 
 function MenuItem({ icon, label, onClick, badge }: { icon: React.ReactNode; label: string; onClick?: () => void; badge?: number }) {
   return (
@@ -165,10 +158,8 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
 
   const [currentPage, setCurrentPage] = useState<SubPage>("main")
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null)
-  const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false)
-  const [withdrawing, setWithdrawing] = useState(false)
 
-  // 설정, 개인정보 보호 등 서브 페이지 진입 시 스크롤 맨 위로
+  // 서브 페이지 진입 시 스크롤 맨 위로
   useEffect(() => {
     if (currentPage !== "main") {
       window.scrollTo(0, 0)
@@ -182,25 +173,6 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
   const currentUserAvatarUrl = profile?.avatarUrl ?? googleAvatarUrl ?? "/placeholder.svg"
   const lifestyleTags = profile ? getLifestyleTags(profile) : []
   const handleLogout = onLogout ?? signOut
-  const handleWithdrawConfirm = async () => {
-    setWithdrawing(true)
-    try {
-      const res = await fetch("/api/account/delete", { method: "POST" })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        toast.error("탈퇴에 실패했어요.", { description: (json.error as string) ?? "다시 시도해 주세요." })
-        setShowWithdrawConfirm(false)
-        return
-      }
-      setShowWithdrawConfirm(false)
-      signOut("/login?message=withdrawn")
-    } catch {
-      toast.error("탈퇴 처리 중 오류가 발생했어요.")
-      setShowWithdrawConfirm(false)
-    } finally {
-      setWithdrawing(false)
-    }
-  }
   const handleRevealContact = async (p: UserProfile): Promise<boolean> => {
     const postId = String(p.id)
     const { success, error: err, contact } = await revealContact(postId)
@@ -292,8 +264,6 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
     );
   }
   if (currentPage === "notifications") return <PlaceholderPage title="알림 설정" onBack={handleBack} />
-  if (currentPage === "settings") return <SettingsPage onBack={handleBack} onOpenPrivacy={() => setCurrentPage("privacy")} onWithdrawSuccess={() => signOut("/login?message=withdrawn")} />
-  if (currentPage === "privacy") return <PrivacyPage onBack={handleBack} />
   if (currentPage === "savedRoommates") return <SavedRoommatesPage onBack={handleBack} savedProfiles={savedProfiles} onViewProfile={handleViewSavedProfile} />
 
   return (
@@ -403,55 +373,12 @@ export function ProfileView({ onLogout }: ProfileViewProps) {
             <div className="h-px bg-border/50 mx-4" />
             <MenuItem icon={<Bell className="size-5" />} label="알림 설정" onClick={() => setCurrentPage("notifications")} />
           </div>
-          <div className="bg-card rounded-2xl border border-border/50 overflow-hidden">
-            <div className="px-4 py-3 border-b border-border/50">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">지원</h3>
-            </div>
-            <MenuItem icon={<Info className="size-5" />} label="서비스 소개" onClick={() => router.push("/about")} />
-            <div className="h-px bg-border/50 mx-4" />
-            <MenuItem icon={<Settings className="size-5" />} label="설정" onClick={() => setCurrentPage("settings")} />
-            <div className="h-px bg-border/50 mx-4" />
-            <MenuItem icon={<Shield className="size-5" />} label="개인정보 보호" onClick={() => setCurrentPage("privacy")} />
-            <div className="h-px bg-border/50 mx-4" />
-            <MenuItem icon={<HelpCircle className="size-5" />} label="도움말 및 지원" onClick={() => window.open(SUPPORT_KAKAO_OPEN_CHAT_URL, "_blank", "noopener,noreferrer")} />
-          </div>
           <button onClick={() => void handleLogout()} className="w-full flex items-center justify-center gap-2 h-14 text-destructive hover:bg-destructive/5 rounded-2xl transition-colors border border-border/50 bg-card">
             <LogOut className="size-5" />
             <span className="text-sm font-medium">로그아웃</span>
           </button>
-          <button
-            onClick={() => setShowWithdrawConfirm(true)}
-            className="w-full flex items-center justify-center gap-2 h-14 text-foreground hover:bg-muted/50 rounded-2xl transition-colors border border-border/50 bg-card mt-2"
-          >
-            <UserX className="size-5" />
-            <span className="text-sm font-medium">회원 탈퇴</span>
-          </button>
         </div>
       </main>
-
-      <AlertDialog open={showWithdrawConfirm} onOpenChange={setShowWithdrawConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>회원 탈퇴</AlertDialogTitle>
-            <AlertDialogDescription>
-              탈퇴 시 프로필, 매칭 게시글, 찜 목록, 연락처 조회 기록 등 모든 데이터가 삭제되며 복구할 수 없습니다. 정말 탈퇴하시겠습니까?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={withdrawing}>취소</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault()
-                void handleWithdrawConfirm()
-              }}
-              disabled={withdrawing}
-              className="bg-destructive text-white hover:bg-destructive/90"
-            >
-              {withdrawing ? "처리 중…" : "탈퇴하기"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }
