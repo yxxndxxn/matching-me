@@ -27,7 +27,12 @@ export async function GET(request: Request) {
     }
     const { exists } = await hasProfile(supabase, user.id);
     const redirectPath = exists ? next : "/onboarding";
-    return NextResponse.redirect(`${origin}${redirectPath}`);
+    const res = NextResponse.redirect(`${origin}${redirectPath}`);
+    // 로그인 직후 대시보드 진입 시 클라이언트에서 hasProfile 재호출 생략용 (60초 후 만료)
+    if (exists && next.startsWith("/dashboard")) {
+      res.cookies.set("profile_checked", "1", { path: "/", maxAge: 60, sameSite: "lax" });
+    }
+    return res;
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     if (msg.includes("Missing Supabase env") || msg.includes("NEXT_PUBLIC_SUPABASE")) {

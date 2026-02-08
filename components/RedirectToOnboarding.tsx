@@ -10,6 +10,18 @@ import { useEffect, useState } from "react";
 import { LoadingState } from "@/components/loading-state";
 
 const PROTECTED_PATHS = ["/dashboard", "/profile"];
+const PROFILE_CHECKED_COOKIE = "profile_checked";
+
+function readAndClearProfileCheckedCookie(): boolean {
+  if (typeof document === "undefined") return false;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${PROFILE_CHECKED_COOKIE}=([^;]*)`));
+  const value = match?.[1];
+  if (value === "1") {
+    document.cookie = `${PROFILE_CHECKED_COOKIE}=; path=/; max-age=0`;
+    return true;
+  }
+  return false;
+}
 
 export function RedirectToOnboarding({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
@@ -20,8 +32,14 @@ export function RedirectToOnboarding({ children }: { children: React.ReactNode }
   const isProtected = PROTECTED_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
   const checking = authLoading || (!!user && isProtected && !profileCheckDone);
 
+  // 로그인 직후 auth 콜백에서 설정한 쿠키가 있으면 hasProfile 호출 생략 (로딩 단축)
+  useEffect(() => {
+    if (readAndClearProfileCheckedCookie()) setProfileCheckDone(true);
+  }, []);
+
   useEffect(() => {
     if (authLoading || !user || !isProtected) return;
+    if (profileCheckDone) return;
     const supabase = createClient();
     void hasProfile(supabase, user.id).then(({ exists, error }) => {
       setProfileCheckDone(true);
@@ -30,7 +48,7 @@ export function RedirectToOnboarding({ children }: { children: React.ReactNode }
         router.replace("/onboarding");
       }
     });
-  }, [user, authLoading, pathname, isProtected, router]);
+  }, [user, authLoading, pathname, isProtected, router, profileCheckDone]);
 
   if (checking) {
     return <LoadingState message="잠시만 기다려 주세요" />;
