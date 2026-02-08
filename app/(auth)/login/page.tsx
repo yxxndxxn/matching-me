@@ -75,33 +75,33 @@ function LoginContent() {
     }
   }, [searchParams]);
 
-  async function handleGoogleLogin() {
+  function handleGoogleLogin() {
     setIsLoggingIn(true);
-    try {
-      const supabase = createClient();
-      const baseUrl =
-        process.env.NEXT_PUBLIC_APP_URL ||
-        (typeof window !== "undefined" ? window.location.origin : "");
-      const nextPath = searchParams.get("redirectTo") || "/dashboard";
-      const redirectTo = `${baseUrl}/api/auth/callback?next=${encodeURIComponent(nextPath)}`;
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (typeof window !== "undefined" ? window.location.origin : "");
+    const nextPath = searchParams.get("redirectTo") || "/dashboard";
+    const redirectTo = `${baseUrl}/api/auth/callback?next=${encodeURIComponent(nextPath)}`;
 
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo,
-        },
-      });
-      if (error) {
+    // 로딩 UI가 한 프레임이라도 그려진 뒤 OAuth 호출 (반응 없음 체감 완화)
+    setTimeout(async () => {
+      try {
+        const supabase = createClient();
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: { redirectTo },
+        });
+        if (error) {
+          setIsLoggingIn(false);
+          toast.error("로그인을 시작하지 못했어요.", { description: error.message });
+        }
+      } catch (e) {
         setIsLoggingIn(false);
-        toast.error("로그인을 시작하지 못했어요.", { description: error.message });
+        toast.error("로그인 중 오류가 발생했어요.", {
+          description: e instanceof Error ? e.message : "다시 시도해 주세요.",
+        });
       }
-      // 성공 시 리다이렉트되므로 로딩 화면 유지
-    } catch (e) {
-      setIsLoggingIn(false);
-      toast.error("로그인 중 오류가 발생했어요.", {
-        description: e instanceof Error ? e.message : "다시 시도해 주세요.",
-      });
-    }
+    }, 0);
   }
 
   if (isLoggingIn) {
