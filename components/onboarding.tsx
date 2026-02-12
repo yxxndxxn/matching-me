@@ -7,7 +7,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronLeft, ChevronDown, User, Users, Check } from "lucide-react"
+import { ChevronLeft, ChevronDown, User, Users, Check, Loader2 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -37,6 +37,8 @@ export interface OnboardingFormData {
 
 interface OnboardingProps {
   onComplete: (data: OnboardingFormData) => void | Promise<void>;
+  /** 프로필 완성 제출 중이면 true (버튼 비활성화 + 스피너) */
+  isSubmitting?: boolean;
 }
 
 const grades = ["1학년", "2학년", "3학년", "4학년"] as const
@@ -57,7 +59,7 @@ const defaultValues: Partial<OnboardingFormSchemaType> = {
   introduction: "",
 }
 
-export function Onboarding({ onComplete }: OnboardingProps) {
+export function Onboarding({ onComplete, isSubmitting = false }: OnboardingProps) {
   const [step, setStep] = useState(1)
   const [direction, setDirection] = useState(1)
   const [showMajorDropdown, setShowMajorDropdown] = useState(false)
@@ -90,7 +92,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       setDirection(1)
       setStep(step + 1)
     } else {
-      form.handleSubmit(onValid)()
+      if (!isSubmitting) form.handleSubmit(onValid)()
     }
   }
   const handleBack = () => { if (step > 1) { setDirection(-1); setStep(step - 1) } }
@@ -282,8 +284,26 @@ export function Onboarding({ onComplete }: OnboardingProps) {
         </AnimatePresence>
       </div>
       <div className="sticky bottom-0 px-6 py-4 bg-background border-t border-border">
-        <Button onClick={handleNext} className="w-full h-12 text-base font-semibold" disabled={(step === 1 && (!name || !gender || !majorCategory || !grade || !dormitory)) || (step === 2 && !contact) || (step === 3 && (chronotype === null || !sleepingHabit || smoking === null || !introduction))}>
-          {step === 3 ? "프로필 완성하기" : "다음"}
+        <Button
+          onClick={handleNext}
+          className="w-full h-12 text-base font-semibold"
+          disabled={
+            isSubmitting ||
+            ((step === 1 && (!name || !gender || !majorCategory || !grade || !dormitory)) ||
+              (step === 2 && !contact) ||
+              (step === 3 && (chronotype === null || !sleepingHabit || smoking === null || !introduction)))
+          }
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="size-5 shrink-0 animate-spin" />
+              <span>저장 중...</span>
+            </>
+          ) : step === 3 ? (
+            "프로필 완성하기"
+          ) : (
+            "다음"
+          )}
         </Button>
       </div>
     </div>

@@ -84,6 +84,8 @@
 ## 4. 적용한 수정 (코드)
 
 - **로그인 페이지** `app/(auth)/login/page.tsx`: 버튼 클릭 시 `setIsLoggingIn(true)`만 먼저 수행하고, **`setTimeout(..., 0)`** 으로 OAuth 호출을 다음 태스크로 미룸. 로딩 화면이 최소 한 번 그려진 뒤 `signInWithOAuth`가 실행되도록 함.
+- **Supabase 브라우저 클라이언트** `lib/supabase/client.ts`: **싱글톤**으로 변경. 버튼 클릭마다 새 클라이언트를 만들지 않아 체감 지연 완화.
+- **로그인 페이지** `app/(auth)/login/page.tsx`: 로그인 페이지 마운트 시 Supabase origin에 **`<link rel="preconnect">`** 추가. 첫 클릭 시 TCP/TLS 연결을 미리 맺어 지연 완화.
 
 ## 5. 요약
 
@@ -94,3 +96,31 @@
 | Google 로그인 후 앱으로 돌아올 때 느림 | `exchangeCodeForSession` + `hasProfile` | 필수 단계; 필요 시 단계별 측정 후 최적화 |
 
 불필요/엉킨 코드: **`components/login-screen.tsx`** 는 현재 미사용이므로 정리 대상.
+
+---
+
+## 6. 여전히 느릴 때: 어디서 시간이 쓰이는지 측정하기
+
+버튼 클릭 후 "Google로 이동하고 있어요..." 화면이 오래 보인다면, **지연이 `signInWithOAuth()` 네트워크 구간**인지 확인하려면 아래처럼 구간별 시간을 찍어보면 된다.
+
+`app/(auth)/login/page.tsx`의 `handleGoogleLogin` 내부 `setTimeout` 콜백에서:
+
+```ts
+setTimeout(async () => {
+  const t0 = performance.now();
+  try {
+    const t1 = performance.now();
+    const supabase = createClient();
+    const t2 = performance.now();
+    const { error } = await supabase.auth.signInWithOAuth({ ... });
+    const t3 = performance.now();
+    if (import.meta.env?.DEV || process.env.NODE_ENV === "development") {
+      console.log("[Login timing] createClient:", t2 - t1, "ms, signInWithOAuth:", t3 - t2, "ms");
+    }
+    // ...
+  } catch (e) { ... }
+}, 0);
+```
+
+- **createClient** 구간이 크면: 싱글톤/캐시가 제대로 적용됐는지 확인.
+- **signInWithOAuth** 구간이 크면: Supabase 서버/네트워크(지역, 방화벽, DNS 등) 또는 Google OAuth 설정 쪽을 점검.

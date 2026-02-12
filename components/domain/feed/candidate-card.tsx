@@ -6,7 +6,7 @@ import { Bookmark, Check, ChevronRight, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils/cn"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import type { UserProfile } from "@/lib/types"
-import { getLifestyleTags, getMajorCategoryLabel, getDormitoryLabel } from "@/lib/types"
+import { getLifestyleTags, getMajorCategoryLabel, getDormitoryLabel, getGenderLabel } from "@/lib/types"
 interface CandidateCardProps {
   profile: UserProfile
   isSaved?: boolean
@@ -68,6 +68,7 @@ export function CandidateCard({
   const lifestyleTags = getLifestyleTags(profile)
   const majorCategoryLabel = getMajorCategoryLabel(profile.majorCategory)
   const dormitoryLabel = getDormitoryLabel(profile.dormitory)
+  const genderLabel = getGenderLabel(profile.gender)
 
   const handleSave = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -101,7 +102,7 @@ export function CandidateCard({
             <div className="min-w-0 space-y-1.5">
               <h3 className="font-semibold text-foreground text-base truncate">{profile.name}</h3>
               <p className="text-xs text-muted-foreground truncate">
-                {majorCategoryLabel} · {dormitoryLabel}
+                {majorCategoryLabel} · {dormitoryLabel} · {genderLabel}
               </p>
               <p className="text-xs text-muted-foreground truncate">
                 {profile.grade}

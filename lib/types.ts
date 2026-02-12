@@ -106,6 +106,10 @@ export function getDormitoryLabel(dormitory: Dormitory): string {
   return found?.label || dormitory;
 }
 
+export function getGenderLabel(gender: "male" | "female"): string {
+  return gender === "male" ? "남" : "여";
+}
+
 export function getSleepingHabitLabel(habit: SleepingHabit): string {
   const found = sleepingHabits.find((h) => h.value === habit);
   return found?.label || habit;

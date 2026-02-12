@@ -2,13 +2,13 @@
 
 /**
  * 온보딩 완료 Server Action
- * profiles + matching_posts 저장, Gemini AI 요약 생성
+ * profiles + matching_posts 저장 후 즉시 성공 반환.
+ * AI 요약은 대시보드 진입 후 /api/onboarding/backfill-ai-summary 에서 백그라운드로 채움.
  */
 
 import { createClient } from "@/lib/supabase/server";
 import { createProfile, hasProfile } from "@/lib/supabase/queries/profiles";
 import { createMatchingPost } from "@/lib/supabase/queries/matching-posts";
-import { generateAiSummaryForProfile } from "@/lib/ai/matching-summary";
 import type { OnboardingFormData } from "@/components/onboarding";
 
 export type CompleteOnboardingResult =
@@ -73,21 +73,11 @@ export async function completeOnboarding(
     };
   }
 
-  // Gemini AI 요약 생성 (비교 대상 없음 → 유저 강점 요약)
-  const lifePattern = {
-    chronotype: profileInsert.chronotype,
-    sleeping_habit: profileInsert.sleeping_habit,
-    smoking: profileInsert.smoking,
-    cleanliness: profileInsert.cleanliness,
-    noise_sensitivity: profileInsert.noise_sensitivity,
-    introduction: profileInsert.introduction,
-  };
-  const aiSummary = await generateAiSummaryForProfile(lifePattern);
-
+  // AI 요약은 백그라운드 백필로 미룸 → 대시보드로 즉시 이동
   const { error: postError } = await createMatchingPost(supabase, {
     user_id: user.id,
     dormitory: profileInsert.dormitory,
-    ai_summary: aiSummary,
+    ai_summary: null,
     match_score: null,
     is_active: true,
   });
