@@ -3,6 +3,7 @@
 // Phase 3.1: Google OAuth 로그인 + 로그인/OAuth 에러 처리 (toast)
 
 import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import dogImage from "@/app/assets/dog_charactor_crop.png";
 import { useSearchParams } from "next/navigation";
@@ -129,7 +130,15 @@ function LoginContent() {
           <span>Google로 계속하기</span>
         </button>
         <p className="text-center text-xs text-muted-foreground px-4">
-          계속 진행하면 서비스 이용약관 및 개인정보 처리방침에 동의하게 됩니다
+          계속 진행하면{" "}
+          <Link href="/terms" className="text-primary underline hover:no-underline">
+            서비스 이용약관
+          </Link>
+          및{" "}
+          <Link href="/privacy" className="text-primary underline hover:no-underline">
+            개인정보 처리방침
+          </Link>
+          에 동의하게 됩니다
         </p>
       </div>
       <div className="absolute bottom-8 left-0 right-0 text-center">
