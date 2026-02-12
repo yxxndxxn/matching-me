@@ -92,7 +92,7 @@ export function Onboarding({ onComplete, isSubmitting = false }: OnboardingProps
       setDirection(1)
       setStep(step + 1)
     } else {
-      form.handleSubmit(onValid)()
+      if (!isSubmitting) form.handleSubmit(onValid)()
     }
   }
   const handleBack = () => { if (step > 1) { setDirection(-1); setStep(step - 1) } }
