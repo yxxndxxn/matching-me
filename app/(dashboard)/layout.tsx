@@ -3,6 +3,7 @@ import { DashboardNavProvider } from "@/components/providers/dashboard-nav-provi
 import { DailyLimitProvider } from "@/components/providers/daily-limit-provider"
 import { AuthInitialProvider } from "@/components/providers/auth-initial-provider"
 import { RedirectToOnboarding } from "@/components/RedirectToOnboarding"
+import { BackfillAiSummaryTrigger } from "@/components/BackfillAiSummaryTrigger"
 import { createClient } from "@/lib/supabase/server"
 
 export default async function DashboardLayout({
@@ -17,6 +18,7 @@ export default async function DashboardLayout({
       <RedirectToOnboarding>
         <DailyLimitProvider>
           <DashboardNavProvider>
+            <BackfillAiSummaryTrigger />
             <AppShell>{children}</AppShell>
           </DashboardNavProvider>
         </DailyLimitProvider>

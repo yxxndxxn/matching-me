@@ -18,11 +18,17 @@ export function useAuth() {
   useEffect(() => {
     const supabase = createClient();
 
-    void supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
-      setSession(initialSession ?? null);
-      setUser(initialSession?.user ?? null);
-      setLoading(false);
-    });
+    void supabase.auth
+      .getSession()
+      .then(({ data: { session: initialSession } }) => {
+        setSession(initialSession ?? null);
+        setUser(initialSession?.user ?? null);
+      })
+      .catch(() => {
+        setSession(null);
+        setUser(null);
+      })
+      .finally(() => setLoading(false));
 
     const {
       data: { subscription },

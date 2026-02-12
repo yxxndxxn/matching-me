@@ -15,6 +15,7 @@ export default function OnboardingPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [ready, setReady] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -27,20 +28,22 @@ export default function OnboardingPage() {
 
   async function handleComplete(data: OnboardingFormData) {
     if (!user) return;
-
-    const result = await completeOnboarding(data);
-
-    if (result.success) {
-      router.replace("/dashboard");
-      router.refresh();
-      return;
+    setIsSubmitting(true);
+    try {
+      const result = await completeOnboarding(data);
+      if (result.success) {
+        router.replace("/dashboard");
+        router.refresh();
+        return;
+      }
+      toast.error("저장에 실패했어요.", {
+        description: result.error || "다시 시도해 주세요.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    toast.error("저장에 실패했어요.", {
-      description: result.error || "다시 시도해 주세요.",
-    });
   }
 
   if (!user || !ready) return null;
-  return <Onboarding onComplete={handleComplete} />;
+  return <Onboarding onComplete={handleComplete} isSubmitting={isSubmitting} />;
 }

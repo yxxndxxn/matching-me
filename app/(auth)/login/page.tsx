@@ -62,6 +62,18 @@ function LoginContent() {
   const hasShownWithdrawnRef = useRef(false)
   const [isLoggingIn, setIsLoggingIn] = useState(false)
 
+  // 로그인 페이지 진입 시 Supabase origin preconnect → 버튼 클릭 시 첫 요청 지연 완화
+  useEffect(() => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (url) {
+      const origin = new URL(url).origin;
+      const link = document.createElement("link");
+      link.rel = "preconnect";
+      link.href = origin;
+      document.head.appendChild(link);
+    }
+  }, []);
+
   useEffect(() => {
     const error = searchParams.get("error");
     const message = searchParams.get("message");
