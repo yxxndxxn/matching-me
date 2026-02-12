@@ -19,6 +19,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "매칭미?",
   description: "남도학숙생을 위한 룸메이트 매칭 플랫폼. 나와 맞는 룸메이트를 찾아보세요.",
+  verification: {
+    google: "TdpLrpGXs_0TcjehcR24Y8tTC5-FZRgS92Rq5OPAA-4",
+  },
 };
 
 export default function RootLayout({
