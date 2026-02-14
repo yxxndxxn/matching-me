@@ -20,7 +20,7 @@ import type { UserProfile } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { AlertCircle, RefreshCw, Loader2 } from "lucide-react"
+import { AlertCircle, RefreshCw, Loader2, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react"
 
 import dogCharacter from "@/app/assets/dog_charactor_crop.png"
 
@@ -28,6 +28,9 @@ const tabs = [
   { id: "all", label: "전체 매칭" },
   { id: "ai", label: "AI 추천" },
 ]
+
+const AI_PAGE_SIZE = 12
+const AI_MATCH_SCORE_THRESHOLD = 75
 
 export function FeedList() {
   const [activeTab, setActiveTab] = useState("all")
@@ -51,13 +54,24 @@ export function FeedList() {
     [filters]
   )
 
-  const { profiles, loading, error, refetch } = useMatchingFeed(feedFilters)
+  const { profiles, loading, error, refetch, page, setPage, totalPages, totalCount, fetchAll } = useMatchingFeed(
+    feedFilters,
+    { fetchAll: activeTab === "ai" }
+  )
+  const [aiPage, setAiPage] = useState(1)
   const { add: addBookmark, remove: removeBookmark, isBookmarked } = useBookmarks()
   const { remaining: dailyRevealsRemaining } = useDailyLimitContext()
   const { reveal: revealContact } = useContactReveal()
   const { revealedIds, addRevealedId } = useRevealedIds()
   const { registerClearFeedSelection } = useDashboardNav()
   const [revealedContacts, setRevealedContacts] = useState<Record<string, RevealedContact>>({})
+  const [showScrollTop, setShowScrollTop] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   useEffect(() => {
     const unregister = registerClearFeedSelection(() => setSelectedCandidate(null))
@@ -70,15 +84,22 @@ export function FeedList() {
     }
   }, [error])
 
+
+  const aiFilteredAndSorted = useMemo(() => {
+    return profiles
+      .filter((p) => (p.matchScore ?? 0) >= AI_MATCH_SCORE_THRESHOLD)
+      .sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
+  }, [profiles])
+
   const displayedCandidates = useMemo(() => {
-    let list = profiles
-    if (activeTab === "ai") {
-      list = list
-        .filter((p) => (p.matchScore ?? 0) >= 75)
-        .sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
-    }
-    return list
-  }, [profiles, activeTab])
+    if (activeTab === "all") return profiles
+    const start = (aiPage - 1) * AI_PAGE_SIZE
+    return aiFilteredAndSorted.slice(start, start + AI_PAGE_SIZE)
+  }, [activeTab, profiles, aiFilteredAndSorted, aiPage])
+
+  const effectivePage = activeTab === "ai" ? aiPage : page
+  const effectiveTotalPages = activeTab === "ai" ? Math.max(1, Math.ceil(aiFilteredAndSorted.length / AI_PAGE_SIZE)) : totalPages
+  const effectiveTotalCount = activeTab === "ai" ? aiFilteredAndSorted.length : totalCount
 
   const handleSaveProfile = async (profile: UserProfile) => {
     const postId = String(profile.id)
@@ -117,6 +138,28 @@ export function FeedList() {
   const handleViewProfile = (candidate: UserProfile) => setSelectedCandidate(candidate)
   const handleBackFromProfile = () => setSelectedCandidate(null)
   const handleFilterChange = (newFilters: FilterState) => setFilters(newFilters)
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId)
+    setPage(1)
+    setAiPage(1)
+  }
+
+  const setEffectivePage = (p: number) => {
+    if (activeTab === "ai") setAiPage(p)
+    else setPage(p)
+  }
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [effectivePage])
+
+  const getVisiblePageNumbers = () => {
+    if (effectiveTotalPages <= 5) return Array.from({ length: effectiveTotalPages }, (_, i) => i + 1)
+    if (effectivePage <= 3) return [1, 2, 3, 4, "...", effectiveTotalPages]
+    if (effectivePage >= effectiveTotalPages - 2)
+      return [1, "...", effectiveTotalPages - 3, effectiveTotalPages - 2, effectiveTotalPages - 1, effectiveTotalPages]
+    return [1, "...", effectivePage - 1, effectivePage, effectivePage + 1, "...", effectiveTotalPages]
+  }
 
   if (selectedCandidate) {
     return (
@@ -135,6 +178,8 @@ export function FeedList() {
       </AnimatePresence>
     )
   }
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
 
   return (
     <div className="min-h-screen pb-24 lg:pb-8">
@@ -179,7 +224,7 @@ export function FeedList() {
         </div>
       </div>
       <FilterBar onFilterChange={handleFilterChange} />
-      <TabMenu activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+      <TabMenu activeTab={activeTab} onTabChange={handleTabChange} tabs={tabs} />
       <main className="px-4 sm:px-6 lg:px-6 py-8">
         <div className="max-w-2xl mx-auto lg:max-w-4xl">
           {loading ? (
@@ -232,24 +277,98 @@ export function FeedList() {
                 다시 시도
               </Button>
             </div>
-          ) : displayedCandidates.length > 0 ? (
-            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
-              {displayedCandidates.map((profile) => (
-                <CandidateCard
-                  key={profile.id}
-                  profile={profile}
-                  isSaved={isProfileSaved(profile.id)}
-                  onSave={() => toggleSave(profile)}
-                  onViewProfile={() => handleViewProfile(profile)}
-                  isAiRecommended={activeTab === "ai"}
-                />
-              ))}
+          ) : profiles.length > 0 ? (
+            <div className="space-y-8">
+              {displayedCandidates.length > 0 ? (
+                <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+                  {displayedCandidates.map((profile) => (
+                    <CandidateCard
+                      key={profile.id}
+                      profile={profile}
+                      isSaved={isProfileSaved(profile.id)}
+                      onSave={() => toggleSave(profile)}
+                      onViewProfile={() => handleViewProfile(profile)}
+                      isAiRecommended={activeTab === "ai"}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    {activeTab === "ai" && aiFilteredAndSorted.length === 0
+                      ? "AI 추천 룸메이트가 없어요. 전체 매칭을 확인해 보세요."
+                      : `이 페이지에는 ${activeTab === "ai" ? "AI 추천 " : ""}룸메이트가 없어요.`}
+                  </p>
+                  {!(activeTab === "ai" && aiFilteredAndSorted.length === 0) && (
+                    <p className="text-xs text-muted-foreground mt-1">다른 페이지를 확인해 보세요.</p>
+                  )}
+                </div>
+              )}
+              {effectiveTotalPages > 1 && (
+                <nav
+                  role="navigation"
+                  aria-label="페이지 네비게이션"
+                  className="flex items-center justify-center gap-1 pt-4"
+                >
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-9"
+                    onClick={() => setEffectivePage(Math.max(1, effectivePage - 1))}
+                    disabled={effectivePage <= 1}
+                    aria-label="이전 페이지"
+                  >
+                    <ChevronLeft className="size-5" />
+                  </Button>
+                  <div className="flex items-center gap-1 mx-2">
+                    {getVisiblePageNumbers().map((p, i) =>
+                      p === "..." ? (
+                        <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground">
+                          …
+                        </span>
+                      ) : (
+                        <Button
+                          key={p}
+                          variant={effectivePage === p ? "outline" : "ghost"}
+                          size="icon"
+                          className="size-9"
+                          onClick={() => setEffectivePage(p as number)}
+                          aria-current={effectivePage === p ? "page" : undefined}
+                          aria-label={`${p}페이지`}
+                        >
+                          {p}
+                        </Button>
+                      )
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-9"
+                    onClick={() => setEffectivePage(Math.min(effectiveTotalPages, effectivePage + 1))}
+                    disabled={effectivePage >= effectiveTotalPages}
+                    aria-label="다음 페이지"
+                  >
+                    <ChevronRight className="size-5" />
+                  </Button>
+                </nav>
+              )}
             </div>
           ) : (
             <EmptyState onUpdatePreferences={() => refetch()} />
           )}
         </div>
       </main>
+      {showScrollTop && (
+        <Button
+          onClick={scrollToTop}
+          aria-label="맨 위로"
+          className="fixed bottom-22 right-4 lg:bottom-10 lg:right-8 z-50 size-12 rounded-full bg-white text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:bg-gray-50 dark:bg-card dark:text-foreground dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:hover:bg-card/90"
+          size="icon"
+        >
+          <ChevronUp className="size-6" />
+        </Button>
+      )}
     </div>
   )
 }

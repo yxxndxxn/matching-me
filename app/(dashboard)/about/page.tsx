@@ -89,7 +89,7 @@ export default function AboutPage() {
 
         <section className="mt-10">
           <p className="text-xs text-muted-foreground text-center">
-            매칭미?는 남도학숙 재학생을 위한 서비스예요.
+            매칭미?는 남도학숙 재사생을 위한 서비스예요.
             <br />
             궁금한 점이 있으시면 설정 &gt; 도움말 및 지원에서 문의해 주세요.
           </p>
