@@ -56,6 +56,8 @@ export interface UserProfile {
   matchScore?: number;
   /** 내 프로필과 일치하는 항목 태그 (예: ["잠버릇 일치", "비흡연자 동일"]) */
   matchTags?: string[];
+  /** 포스트 등록일 (ISO string, 피드 카드용) */
+  postedAt?: string;
 }
 
 /** DB ProfileRow → UI UserProfile (마이페이지 등) */
@@ -90,10 +92,11 @@ export function feedItemToUserProfile(item: {
   post: MatchingPostRow;
   profile: ProfileRow;
 }): UserProfile {
-  return profileRowToUserProfile(item.profile, {
+  const base = profileRowToUserProfile(item.profile, {
     id: item.post.id,
     matchScore: item.post.match_score ?? undefined,
   });
+  return { ...base, postedAt: item.post.created_at };
 }
 
 export function getMajorCategoryLabel(category: MajorCategory): string {

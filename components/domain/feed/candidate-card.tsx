@@ -2,8 +2,9 @@
 
 import React from "react"
 
-import { Bookmark, Check, ChevronRight, Sparkles } from "lucide-react"
+import { Bookmark, Calendar, Check, ChevronRight, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils/cn"
+import { formatPostedAt } from "@/lib/utils/format"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import type { UserProfile } from "@/lib/types"
 import { getLifestyleTags, getMajorCategoryLabel, getDormitoryLabel, getGenderLabel } from "@/lib/types"
@@ -104,9 +105,15 @@ export function CandidateCard({
               <p className="text-xs text-muted-foreground truncate">
                 {majorCategoryLabel} · {dormitoryLabel} · {genderLabel}
               </p>
-              <p className="text-xs text-muted-foreground truncate">
-                {profile.grade}
-              </p>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <p className="text-xs text-muted-foreground truncate">{profile.grade}</p>
+                {profile.postedAt && (
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Calendar className="size-3 shrink-0" />
+                    {formatPostedAt(profile.postedAt)}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="shrink-0">
               <CircularProgress value={profile.matchScore || 0} />
