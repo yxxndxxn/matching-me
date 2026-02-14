@@ -20,7 +20,7 @@ import type { UserProfile } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { AlertCircle, RefreshCw, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
+import { AlertCircle, RefreshCw, Loader2, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react"
 
 import dogCharacter from "@/app/assets/dog_charactor_crop.png"
 
@@ -58,6 +58,13 @@ export function FeedList() {
   const { revealedIds, addRevealedId } = useRevealedIds()
   const { registerClearFeedSelection } = useDashboardNav()
   const [revealedContacts, setRevealedContacts] = useState<Record<string, RevealedContact>>({})
+  const [showScrollTop, setShowScrollTop] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   useEffect(() => {
     const unregister = registerClearFeedSelection(() => setSelectedCandidate(null))
@@ -150,6 +157,8 @@ export function FeedList() {
       </AnimatePresence>
     )
   }
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
 
   return (
     <div className="min-h-screen pb-24 lg:pb-8">
@@ -325,6 +334,16 @@ export function FeedList() {
           )}
         </div>
       </main>
+      {showScrollTop && (
+        <Button
+          onClick={scrollToTop}
+          aria-label="맨 위로"
+          className="fixed bottom-22 right-4 lg:bottom-10 lg:right-8 z-50 size-12 rounded-full bg-white text-foreground shadow-[0_2px_8px_rgba(0,0,0,0.12)] hover:bg-gray-50 dark:bg-card dark:text-foreground dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:hover:bg-card/90"
+          size="icon"
+        >
+          <ChevronUp className="size-6" />
+        </Button>
+      )}
     </div>
   )
 }
