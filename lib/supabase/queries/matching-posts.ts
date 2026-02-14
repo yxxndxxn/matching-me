@@ -22,6 +22,10 @@ export interface GetMatchingPostsOptions {
   filters?: FeedFilters;
   /** 대시보드 피드에서 제외할 사용자 ID (본인 제외용) */
   excludeUserId?: string;
+  /** 페이지 번호 (1-based) */
+  page?: number;
+  /** 페이지당 항목 수 */
+  pageSize?: number;
 }
 
 /**
@@ -30,13 +34,17 @@ export interface GetMatchingPostsOptions {
  * matching_posts + profiles 조인 (두 쿼리로 수행)
  * excludeUserId 가 있으면 해당 사용자의 게시글은 결과에서 제외 (본인 정보가 피드에 나오지 않도록)
  */
+const DEFAULT_PAGE_SIZE = 12;
+
 export async function getMatchingPosts(
   supabase: SupabaseClient,
   options?: FeedFilters | GetMatchingPostsOptions
-): Promise<{ data: FeedItem[]; error: PostgrestError | null }> {
+): Promise<{ data: FeedItem[]; totalCount: number; error: PostgrestError | null }> {
   const filters: FeedFilters | undefined =
     options && "filters" in options ? options.filters : (options as FeedFilters | undefined);
   const excludeUserId = options && "excludeUserId" in options ? options.excludeUserId : undefined;
+  const page = options && "page" in options && typeof options.page === "number" ? options.page : 1;
+  const pageSize = options && "pageSize" in options && typeof options.pageSize === "number" ? options.pageSize : DEFAULT_PAGE_SIZE;
 
   const { data: posts, error: postsError } = await supabase
     .from("matching_posts")
@@ -45,7 +53,7 @@ export async function getMatchingPosts(
     .order("created_at", { ascending: false });
 
   if (postsError || !posts || posts.length === 0) {
-    return { data: [], error: postsError ?? null };
+    return { data: [], totalCount: 0, error: postsError ?? null };
   }
 
   let postList = posts as MatchingPostRow[];
@@ -53,7 +61,7 @@ export async function getMatchingPosts(
     postList = postList.filter((p) => p.user_id !== excludeUserId);
   }
   if (postList.length === 0) {
-    return { data: [], error: null };
+    return { data: [], totalCount: 0, error: null };
   }
 
   const userIds = [...new Set(postList.map((p) => p.user_id))];
@@ -62,7 +70,7 @@ export async function getMatchingPosts(
     .select("*")
     .in("id", userIds);
 
-  if (profilesError) return { data: [], error: profilesError };
+  if (profilesError) return { data: [], totalCount: 0, error: profilesError };
   const profileMap = new Map<string, ProfileRow>();
   (profiles ?? []).forEach((p) => profileMap.set(p.id, p as ProfileRow));
 
@@ -88,7 +96,11 @@ export async function getMatchingPosts(
       );
   }
 
-  return { data: items, error: null };
+  const totalCount = items.length;
+  const start = (page - 1) * pageSize;
+  const paginatedItems = items.slice(start, start + pageSize);
+
+  return { data: paginatedItems, totalCount, error: null };
 }
 
 /**

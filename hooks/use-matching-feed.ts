@@ -9,36 +9,56 @@ import { feedItemToUserProfile } from "@/lib/types";
 import type { UserProfile } from "@/lib/types";
 import { calculateMatchScore } from "@/lib/matching/calculate-match-score";
 import { getMatchingTags } from "@/lib/matching/get-matching-tags";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "./use-auth";
+
+const PAGE_SIZE = 12;
 
 export function useMatchingFeed(filters?: FeedFilters): {
   profiles: UserProfile[];
   loading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
+  page: number;
+  setPage: (page: number) => void;
+  totalPages: number;
+  totalCount: number;
+  pageSize: number;
 } {
   const { user } = useAuth();
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const prevFiltersKeyRef = useRef(JSON.stringify(filters ?? {}));
 
   const fetchFeed = useCallback(async () => {
     if (!user?.id) {
       setProfiles([]);
+      setTotalCount(0);
       setLoading(false);
       return;
     }
+    const filtersKey = JSON.stringify(filters ?? {});
+    const filtersChanged = prevFiltersKeyRef.current !== filtersKey;
+    if (filtersChanged) {
+      prevFiltersKeyRef.current = filtersKey;
+      setPage(1);
+    }
+    const pageToFetch = filtersChanged ? 1 : page;
+
     setLoading(true);
     setError(null);
     try {
       const supabase = createClient();
       const [postsResult, viewerProfile] = await Promise.all([
-        getMatchingPosts(supabase, { filters, excludeUserId: user.id }),
+        getMatchingPosts(supabase, { filters, excludeUserId: user.id, page: pageToFetch, pageSize: PAGE_SIZE }),
         getProfile(supabase, user.id),
       ]);
       if (postsResult.error) throw postsResult.error;
       const items = postsResult.data ?? [];
+      setTotalCount(postsResult.totalCount ?? 0);
 
       const profilesWithScore: UserProfile[] = items.map((item) => {
         const profile = feedItemToUserProfile(item);
@@ -55,14 +75,27 @@ export function useMatchingFeed(filters?: FeedFilters): {
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
       setProfiles([]);
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
-  }, [user?.id, JSON.stringify(filters ?? {})]);
+  }, [user?.id, JSON.stringify(filters ?? {}), page]);
 
   useEffect(() => {
     void fetchFeed();
   }, [fetchFeed]);
 
-  return { profiles, loading, error, refetch: fetchFeed };
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  return {
+    profiles,
+    loading,
+    error,
+    refetch: fetchFeed,
+    page,
+    setPage,
+    totalPages,
+    totalCount,
+    pageSize: PAGE_SIZE,
+  };
 }

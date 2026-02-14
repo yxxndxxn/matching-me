@@ -20,7 +20,7 @@ import type { UserProfile } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { AlertCircle, RefreshCw, Loader2 } from "lucide-react"
+import { AlertCircle, RefreshCw, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 
 import dogCharacter from "@/app/assets/dog_charactor_crop.png"
 
@@ -51,7 +51,7 @@ export function FeedList() {
     [filters]
   )
 
-  const { profiles, loading, error, refetch } = useMatchingFeed(feedFilters)
+  const { profiles, loading, error, refetch, page, setPage, totalPages, totalCount } = useMatchingFeed(feedFilters)
   const { add: addBookmark, remove: removeBookmark, isBookmarked } = useBookmarks()
   const { remaining: dailyRevealsRemaining } = useDailyLimitContext()
   const { reveal: revealContact } = useContactReveal()
@@ -69,6 +69,10 @@ export function FeedList() {
       toast.error("피드를 불러오지 못했어요.", { description: "아래에서 다시 시도해 주세요." })
     }
   }, [error])
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [page])
 
   const displayedCandidates = useMemo(() => {
     let list = profiles
@@ -117,6 +121,17 @@ export function FeedList() {
   const handleViewProfile = (candidate: UserProfile) => setSelectedCandidate(candidate)
   const handleBackFromProfile = () => setSelectedCandidate(null)
   const handleFilterChange = (newFilters: FilterState) => setFilters(newFilters)
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId)
+    setPage(1)
+  }
+
+  const getVisiblePageNumbers = () => {
+    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1)
+    if (page <= 3) return [1, 2, 3, 4, "...", totalPages]
+    if (page >= totalPages - 2) return [1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages]
+    return [1, "...", page - 1, page, page + 1, "...", totalPages]
+  }
 
   if (selectedCandidate) {
     return (
@@ -179,7 +194,7 @@ export function FeedList() {
         </div>
       </div>
       <FilterBar onFilterChange={handleFilterChange} />
-      <TabMenu activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
+      <TabMenu activeTab={activeTab} onTabChange={handleTabChange} tabs={tabs} />
       <main className="px-4 sm:px-6 lg:px-6 py-8">
         <div className="max-w-2xl mx-auto lg:max-w-4xl">
           {loading ? (
@@ -232,18 +247,78 @@ export function FeedList() {
                 다시 시도
               </Button>
             </div>
-          ) : displayedCandidates.length > 0 ? (
-            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
-              {displayedCandidates.map((profile) => (
-                <CandidateCard
-                  key={profile.id}
-                  profile={profile}
-                  isSaved={isProfileSaved(profile.id)}
-                  onSave={() => toggleSave(profile)}
-                  onViewProfile={() => handleViewProfile(profile)}
-                  isAiRecommended={activeTab === "ai"}
-                />
-              ))}
+          ) : profiles.length > 0 ? (
+            <div className="space-y-8">
+              {displayedCandidates.length > 0 ? (
+                <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+                  {displayedCandidates.map((profile) => (
+                    <CandidateCard
+                      key={profile.id}
+                      profile={profile}
+                      isSaved={isProfileSaved(profile.id)}
+                      onSave={() => toggleSave(profile)}
+                      onViewProfile={() => handleViewProfile(profile)}
+                      isAiRecommended={activeTab === "ai"}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    이 페이지에는 {activeTab === "ai" ? "AI 추천 " : ""}룸메이트가 없어요.
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">다른 페이지를 확인해 보세요.</p>
+                </div>
+              )}
+              {totalPages > 1 && (
+                <nav
+                  role="navigation"
+                  aria-label="페이지 네비게이션"
+                  className="flex items-center justify-center gap-1 pt-4"
+                >
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-9"
+                    onClick={() => setPage(Math.max(1, page - 1))}
+                    disabled={page <= 1}
+                    aria-label="이전 페이지"
+                  >
+                    <ChevronLeft className="size-5" />
+                  </Button>
+                  <div className="flex items-center gap-1 mx-2">
+                    {getVisiblePageNumbers().map((p, i) =>
+                      p === "..." ? (
+                        <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground">
+                          …
+                        </span>
+                      ) : (
+                        <Button
+                          key={p}
+                          variant={page === p ? "outline" : "ghost"}
+                          size="icon"
+                          className="size-9"
+                          onClick={() => setPage(p as number)}
+                          aria-current={page === p ? "page" : undefined}
+                          aria-label={`${p}페이지`}
+                        >
+                          {p}
+                        </Button>
+                      )
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-9"
+                    onClick={() => setPage(Math.min(totalPages, page + 1))}
+                    disabled={page >= totalPages}
+                    aria-label="다음 페이지"
+                  >
+                    <ChevronRight className="size-5" />
+                  </Button>
+                </nav>
+              )}
             </div>
           ) : (
             <EmptyState onUpdatePreferences={() => refetch()} />
