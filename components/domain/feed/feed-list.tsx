@@ -29,6 +29,9 @@ const tabs = [
   { id: "ai", label: "AI 추천" },
 ]
 
+const AI_PAGE_SIZE = 12
+const AI_MATCH_SCORE_THRESHOLD = 75
+
 export function FeedList() {
   const [activeTab, setActiveTab] = useState("all")
   const [selectedCandidate, setSelectedCandidate] = useState<UserProfile | null>(null)
@@ -51,7 +54,11 @@ export function FeedList() {
     [filters]
   )
 
-  const { profiles, loading, error, refetch, page, setPage, totalPages, totalCount } = useMatchingFeed(feedFilters)
+  const { profiles, loading, error, refetch, page, setPage, totalPages, totalCount, fetchAll } = useMatchingFeed(
+    feedFilters,
+    { fetchAll: activeTab === "ai" }
+  )
+  const [aiPage, setAiPage] = useState(1)
   const { add: addBookmark, remove: removeBookmark, isBookmarked } = useBookmarks()
   const { remaining: dailyRevealsRemaining } = useDailyLimitContext()
   const { reveal: revealContact } = useContactReveal()
@@ -77,19 +84,22 @@ export function FeedList() {
     }
   }, [error])
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }, [page])
+
+  const aiFilteredAndSorted = useMemo(() => {
+    return profiles
+      .filter((p) => (p.matchScore ?? 0) >= AI_MATCH_SCORE_THRESHOLD)
+      .sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
+  }, [profiles])
 
   const displayedCandidates = useMemo(() => {
-    let list = profiles
-    if (activeTab === "ai") {
-      list = list
-        .filter((p) => (p.matchScore ?? 0) >= 75)
-        .sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
-    }
-    return list
-  }, [profiles, activeTab])
+    if (activeTab === "all") return profiles
+    const start = (aiPage - 1) * AI_PAGE_SIZE
+    return aiFilteredAndSorted.slice(start, start + AI_PAGE_SIZE)
+  }, [activeTab, profiles, aiFilteredAndSorted, aiPage])
+
+  const effectivePage = activeTab === "ai" ? aiPage : page
+  const effectiveTotalPages = activeTab === "ai" ? Math.max(1, Math.ceil(aiFilteredAndSorted.length / AI_PAGE_SIZE)) : totalPages
+  const effectiveTotalCount = activeTab === "ai" ? aiFilteredAndSorted.length : totalCount
 
   const handleSaveProfile = async (profile: UserProfile) => {
     const postId = String(profile.id)
@@ -131,13 +141,24 @@ export function FeedList() {
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId)
     setPage(1)
+    setAiPage(1)
   }
 
+  const setEffectivePage = (p: number) => {
+    if (activeTab === "ai") setAiPage(p)
+    else setPage(p)
+  }
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [effectivePage])
+
   const getVisiblePageNumbers = () => {
-    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1)
-    if (page <= 3) return [1, 2, 3, 4, "...", totalPages]
-    if (page >= totalPages - 2) return [1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages]
-    return [1, "...", page - 1, page, page + 1, "...", totalPages]
+    if (effectiveTotalPages <= 5) return Array.from({ length: effectiveTotalPages }, (_, i) => i + 1)
+    if (effectivePage <= 3) return [1, 2, 3, 4, "...", effectiveTotalPages]
+    if (effectivePage >= effectiveTotalPages - 2)
+      return [1, "...", effectiveTotalPages - 3, effectiveTotalPages - 2, effectiveTotalPages - 1, effectiveTotalPages]
+    return [1, "...", effectivePage - 1, effectivePage, effectivePage + 1, "...", effectiveTotalPages]
   }
 
   if (selectedCandidate) {
@@ -274,12 +295,16 @@ export function FeedList() {
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <p className="text-sm text-muted-foreground">
-                    이 페이지에는 {activeTab === "ai" ? "AI 추천 " : ""}룸메이트가 없어요.
+                    {activeTab === "ai" && aiFilteredAndSorted.length === 0
+                      ? "AI 추천 룸메이트가 없어요. 전체 매칭을 확인해 보세요."
+                      : `이 페이지에는 ${activeTab === "ai" ? "AI 추천 " : ""}룸메이트가 없어요.`}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">다른 페이지를 확인해 보세요.</p>
+                  {!(activeTab === "ai" && aiFilteredAndSorted.length === 0) && (
+                    <p className="text-xs text-muted-foreground mt-1">다른 페이지를 확인해 보세요.</p>
+                  )}
                 </div>
               )}
-              {totalPages > 1 && (
+              {effectiveTotalPages > 1 && (
                 <nav
                   role="navigation"
                   aria-label="페이지 네비게이션"
@@ -289,8 +314,8 @@ export function FeedList() {
                     variant="ghost"
                     size="icon"
                     className="size-9"
-                    onClick={() => setPage(Math.max(1, page - 1))}
-                    disabled={page <= 1}
+                    onClick={() => setEffectivePage(Math.max(1, effectivePage - 1))}
+                    disabled={effectivePage <= 1}
                     aria-label="이전 페이지"
                   >
                     <ChevronLeft className="size-5" />
@@ -304,11 +329,11 @@ export function FeedList() {
                       ) : (
                         <Button
                           key={p}
-                          variant={page === p ? "outline" : "ghost"}
+                          variant={effectivePage === p ? "outline" : "ghost"}
                           size="icon"
                           className="size-9"
-                          onClick={() => setPage(p as number)}
-                          aria-current={page === p ? "page" : undefined}
+                          onClick={() => setEffectivePage(p as number)}
+                          aria-current={effectivePage === p ? "page" : undefined}
                           aria-label={`${p}페이지`}
                         >
                           {p}
@@ -320,8 +345,8 @@ export function FeedList() {
                     variant="ghost"
                     size="icon"
                     className="size-9"
-                    onClick={() => setPage(Math.min(totalPages, page + 1))}
-                    disabled={page >= totalPages}
+                    onClick={() => setEffectivePage(Math.min(effectiveTotalPages, effectivePage + 1))}
+                    disabled={effectivePage >= effectiveTotalPages}
                     aria-label="다음 페이지"
                   >
                     <ChevronRight className="size-5" />

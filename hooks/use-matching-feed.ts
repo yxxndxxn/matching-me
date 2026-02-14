@@ -13,8 +13,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "./use-auth";
 
 const PAGE_SIZE = 12;
+const FETCH_ALL_PAGE_SIZE = 9999;
 
-export function useMatchingFeed(filters?: FeedFilters): {
+export function useMatchingFeed(filters?: FeedFilters, options?: { fetchAll?: boolean }): {
   profiles: UserProfile[];
   loading: boolean;
   error: Error | null;
@@ -24,7 +25,9 @@ export function useMatchingFeed(filters?: FeedFilters): {
   totalPages: number;
   totalCount: number;
   pageSize: number;
+  fetchAll: boolean;
 } {
+  const fetchAll = options?.fetchAll ?? false;
   const { user } = useAuth();
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,13 +50,19 @@ export function useMatchingFeed(filters?: FeedFilters): {
       setPage(1);
     }
     const pageToFetch = filtersChanged ? 1 : page;
+    const pageSize = fetchAll ? FETCH_ALL_PAGE_SIZE : PAGE_SIZE;
 
     setLoading(true);
     setError(null);
     try {
       const supabase = createClient();
       const [postsResult, viewerProfile] = await Promise.all([
-        getMatchingPosts(supabase, { filters, excludeUserId: user.id, page: pageToFetch, pageSize: PAGE_SIZE }),
+        getMatchingPosts(supabase, {
+          filters,
+          excludeUserId: user.id,
+          page: fetchAll ? 1 : pageToFetch,
+          pageSize,
+        }),
         getProfile(supabase, user.id),
       ]);
       if (postsResult.error) throw postsResult.error;
@@ -79,13 +88,13 @@ export function useMatchingFeed(filters?: FeedFilters): {
     } finally {
       setLoading(false);
     }
-  }, [user?.id, JSON.stringify(filters ?? {}), page]);
+  }, [user?.id, JSON.stringify(filters ?? {}), page, fetchAll]);
 
   useEffect(() => {
     void fetchFeed();
   }, [fetchFeed]);
 
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const totalPages = fetchAll ? 1 : Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   return {
     profiles,
@@ -97,5 +106,6 @@ export function useMatchingFeed(filters?: FeedFilters): {
     totalPages,
     totalCount,
     pageSize: PAGE_SIZE,
+    fetchAll,
   };
 }

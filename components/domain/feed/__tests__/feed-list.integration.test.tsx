@@ -43,6 +43,7 @@ vi.mock("@/hooks/use-matching-feed", () => ({
     totalPages: 3,
     totalCount: 25,
     pageSize: 12,
+    fetchAll: false,
   }),
 }))
 
