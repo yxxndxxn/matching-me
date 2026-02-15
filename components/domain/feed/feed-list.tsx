@@ -203,7 +203,7 @@ export function FeedList() {
         </div>
       </div>
       {/* 메인 캐릭터 배너 (데스크톱) */}
-      <div className="hidden lg:block bg-gradient-to-br from-primary/10 via-primary/5 to-background px-4 sm:px-6 lg:px-6 pt-8 pb-6 overflow-hidden">
+      <div className="hidden lg:block bg-gradient-to-br from-primary/10 via-primary/5 to-background px-4 sm:px-6 lg:px-6 pt-8 overflow-hidden">
         <div className="max-w-2xl mx-auto lg:max-w-4xl flex items-center gap-6">
           <div className="shrink-0 w-28 h-28 relative overflow-hidden rounded-b-lg bg-transparent">
             <Image
